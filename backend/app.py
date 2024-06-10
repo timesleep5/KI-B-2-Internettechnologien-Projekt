@@ -1,6 +1,8 @@
+import threading
 from typing import List, Dict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 from Bot import Bot
 from ChatModels import *
@@ -8,35 +10,39 @@ from ChatModels import *
 
 class ChatSession(BaseModel):
     user: User
-    bot: Bot
     messages: List[Message]
 
 
 class Database:
     def __init__(self):
+        self.lock = threading.Lock()
         self.chat_counter: int = 0
         self.chat_sessions: Dict[int, ChatSession] = {}
+        self.bots: Dict[int, Bot] = {}
 
-    def create_chat_session_from_user(self, name: str) -> int:
-        self.chat_counter += 1
-        user = User(name=name)
-        bot = Bot()
-        chat_session = ChatSession(user=user, bot=bot, messages=[])
-        self.chat_sessions[self.chat_counter] = chat_session
+    async def create_chat_session_from_user(self, name: str) -> int:
+        with self.lock:
+            self.chat_counter += 1
+            user = User(name=name)
+            chat_session = ChatSession(user=user, messages=[])
+            self.chat_sessions[self.chat_counter] = chat_session
 
-        return self.chat_counter
+            bot = Bot()
+            self.bots[self.chat_counter] = bot
 
-    def react_to_user_mesage(self, chat_id: int, message: UserMessage) -> BotMessage:
+            return self.chat_counter
+
+    async def react_to_user_message(self, chat_id: int, message: UserMessage) -> BotMessage:
         chat_session = self.__get_chat_session_if_valid(chat_id)
         chat_session.messages.append(message)
 
-        bot = chat_session.bot
+        bot = self.__get_bot_if_valid(chat_id)
         bot_response = bot.respond_to(message)
         chat_session.messages.append(bot_response)
 
         return bot_response
 
-    def get_chat_session(self, chat_id: int):
+    async def get_chat_session(self, chat_id: int):
         return self.__get_chat_session_if_valid(chat_id)
 
     def __get_chat_session_if_valid(self, chat_id: int) -> ChatSession:
@@ -44,24 +50,41 @@ class Database:
             raise HTTPException(status_code=404, detail="Chat session not found")
         return self.chat_sessions[chat_id]
 
+    def __get_bot_if_valid(self, chat_id) -> Bot:
+        if chat_id not in self.bots:
+            raise HTTPException(status_code=404, detail="Bot not found")
+        return self.bots[chat_id]
+
 
 database = Database()
 app = FastAPI()
 
+origins = [
+    "http://localhost:4200"
+]
 
-@app.post("/chats/new/name/{name}", response_model=int)
-def create_chat_session_from_user(name: str):
-    return database.create_chat_session_from_user(name)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.post("/chats/new", response_model=int)
+async def create_chat_session_from_user(name: str = Query(None, min_length=1)):
+    return await database.create_chat_session_from_user(name)
 
 
 @app.post("/chats/id/{chat_id}/message", response_model=BotMessage)
-def react_to_user_mesage(chat_id: int, message: UserMessage):
-    return database.react_to_user_mesage(chat_id, message)
+async def react_to_user_message(chat_id: int, message: UserMessage):
+    return await database.react_to_user_message(chat_id, message)
 
 
 @app.get("/chats/id/{chat_id}", response_model=ChatSession)
-def get_chat_session(chat_id: int):
-    return database.get_chat_session(chat_id)
+async def get_chat_session(chat_id: int):
+    return await database.get_chat_session(chat_id)
 
 
 if __name__ == "__main__":
