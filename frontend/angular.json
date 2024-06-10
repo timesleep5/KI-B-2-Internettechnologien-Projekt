@@ -68,6 +68,10 @@
               "buildTarget": "LeaseBot:build:development"
             }
           },
+          "options": {
+            "browserTarget": "lease-bot:build",
+            "proxyConfig": "src/proxy.conf.json"
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
