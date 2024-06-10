@@ -49,7 +49,7 @@ database = Database()
 app = FastAPI()
 
 
-@app.post("/chats/new", response_model=int)
+@app.post("/chats/new/name/{name}", response_model=int)
 def create_chat_session_from_user(name: str):
     return database.create_chat_session_from_user(name)
 
