@@ -41,7 +41,7 @@ keywords_to_actions = {
 class StringManipulation:
     @staticmethod
     def to_words(content: str) -> List[str]:
-        separators = [',', '.', ':']
+        separators = [',', '.', ':', '?', '!']
         before = content.split()
         after = []
         for separator in separators:
@@ -59,8 +59,6 @@ class StringManipulation:
 
 
 class Bot:
-    bot_message_counter: int = 0
-
     def __init__(self):
         self.__summary_builder = None
         self.__start_date = None
@@ -70,8 +68,12 @@ class Bot:
 
     def respond_to(self, message: UserMessage) -> BotMessage:
         content = message.content
-        action_to_take = self.__derive_action_from_content(content)
-        message_for_action = self.__act(action_to_take, content)
+        message_for_action: str
+        try:
+            action_to_take = self.__derive_action_from_content(content)
+            message_for_action = self.__act(action_to_take, content)
+        except Exception as e:
+            message_for_action = BotAction.NO_IDEA.value
         response_content = self.__build_response_content(message_for_action)
         return self.__build_response(response_content)
 
@@ -145,12 +147,10 @@ class Bot:
             missing_variables.append('the kilometer limit')
         if self.__km_driven is None:
             missing_variables.append('the kilometer you drove')
-        return '\n'.join(missing_variables)
+        return ', '.join(missing_variables)
 
     def __build_response(self, content: str) -> BotMessage:
-        Bot.bot_message_counter += 1
         return BotMessage(
-            id=Bot.bot_message_counter,
             time_sent=datetime.now(),
             content=content
         )
@@ -172,8 +172,8 @@ class Bot:
 
 
 if __name__ == '__main__':
-    bot = Bot(1)
-    user = User(id=1, name='klaus')
+    bot = Bot()
+    user = User(name='klaus')
 
 
     def get_answer_to(msg):
