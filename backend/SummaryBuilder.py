@@ -1,11 +1,19 @@
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple
+from dateutil.relativedelta import relativedelta
+from pydantic import BaseModel
 
-from Models import LeasingContract
+
+class LeasingContract(BaseModel):
+    start_date: datetime
+    end_date: datetime
+    km_limit: int
+    runtime_days: int
+    runtime_months: int
 
 
-class LeasingCalculator:
+class SummaryBuilder:
     def __init__(self, start_date: datetime, runtime_months: int, km_limit: int, km_driven: float):
         end_date = self.__calculate_end_date(start_date, runtime_months)
         runtime_days = self.__calculate_runtime_days(start_date, end_date)
@@ -32,18 +40,9 @@ class LeasingCalculator:
         return summary
 
     def __calculate_end_date(self, start_date: datetime, runtime_months: int) -> datetime:
-        future_month = start_date.month + runtime_months
-        future_year = start_date.year + future_month // 12
-        future_month %= 12
-
-        if future_month == 0:
-            future_month = 12
-            future_year -= 1
-
-        last_day_of_future_month = calendar.monthrange(future_year, future_month)[1]
-        future_day = min(start_date.day, last_day_of_future_month)
-
-        return datetime(future_year, future_month, future_day)
+        end_date = start_date + relativedelta(months=runtime_months)
+        end_date -= timedelta(days=1)
+        return end_date
 
     def __calculate_runtime_days(self, start_date: datetime, end_date: datetime) -> int:
         return (end_date - start_date).days
@@ -51,6 +50,8 @@ class LeasingCalculator:
     def __calculate_summary(self) -> Dict[str, Any]:
         return {
             'contract': self.__contract_overview(),
+            'start date': self.__format_date(self.__contract.start_date),
+            'end date': self.__format_date(self.__contract.end_date),
             'daily average': self.__calculate_daily_average(),
             'monthly average': self.__calculate_monthly_average(),
             'day': self.__day_number_in_contract(),
@@ -64,6 +65,9 @@ class LeasingCalculator:
 
     def __contract_overview(self) -> str:
         return f'{self.__contract.km_limit} km over {self.__contract.runtime_months} months'
+
+    def __format_date(self, date: datetime) -> str:
+        return date.strftime("%d.%m.%Y")
 
     def __calculate_daily_average(self) -> float:
         km_limit = self.__contract.km_limit
@@ -126,5 +130,5 @@ class LeasingCalculator:
 
 
 if __name__ == '__main__':
-    lc = LeasingCalculator(datetime(2024, 3, 1), 9, 8000, 2714)
+    lc = SummaryBuilder(datetime(2024, 3, 1), 9, 8000, 2714)
     print(lc.get_summary())

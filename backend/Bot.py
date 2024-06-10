@@ -3,8 +3,8 @@ from enum import Enum
 from textwrap import dedent
 from typing import List
 
-from LeasingCalculator import LeasingCalculator
-from Models import UserMessage, BotMessage, User
+from SummaryBuilder import SummaryBuilder
+from ChatModels import UserMessage, BotMessage, User
 
 
 class BotAction(Enum):
@@ -62,7 +62,7 @@ class Bot:
     bot_message_counter: int = 0
 
     def __init__(self):
-        self.__calculator = None
+        self.__summary_builder = None
         self.__start_date = None
         self.__runtime_months = None
         self.__km_limit = None
@@ -88,7 +88,7 @@ class Bot:
 
     def __change_action_if_original_not_viable(self, action: BotAction) -> BotAction:
         requires_calculator = action == BotAction.GET_SUMMARY
-        if requires_calculator and not self.__calculator:
+        if requires_calculator and not self.__summary_builder:
             return BotAction.NO_CALCULATOR
         else:
             return action
@@ -104,7 +104,7 @@ class Bot:
                 self.__km_limit = int(value_string)
             case BotAction.SET_KM_DRIVEN:
                 self.__km_driven = int(value_string)
-        self.__build_calculator_if_possible()
+        self.__build_summary_builder_if_possible()
 
         return str(action_to_take.value)
 
@@ -112,7 +112,7 @@ class Bot:
         if message_for_action.startswith('set'):
             return f'Thanks for your input! I {message_for_action}. If you need anything else, let me know.'
         elif message_for_action.startswith('summary'):
-            return f'Here is your summary: \n{self.__calculator.get_summary()}'
+            return f'Here is your summary: \n{self.__summary_builder.get_summary()}'
         elif message_for_action.startswith('no calculator'):
             return ('I understand what you want from me, but I\'m sorry, I can\'t give you that.\n'
                     f'Unfortunately, there is still some missing data from your contract:\n'
@@ -155,24 +155,24 @@ class Bot:
             content=content
         )
 
-    def __build_calculator_if_possible(self) -> None:
-        if self.__calculator_can_be_built():
-            self.__build_calculator()
+    def __build_summary_builder_if_possible(self) -> None:
+        if self.__summary_builder_can_be_built():
+            self.__build_summary_builder()
 
-    def __calculator_can_be_built(self) -> bool:
+    def __summary_builder_can_be_built(self) -> bool:
         return (self.__start_date is not None
                 and self.__runtime_months is not None
                 and self.__km_limit is not None
                 and self.__km_driven)
 
-    def __build_calculator(self) -> None:
-        self.__calculator = LeasingCalculator(
+    def __build_summary_builder(self) -> None:
+        self.__summary_builder = SummaryBuilder(
             self.__start_date, self.__runtime_months, self.__km_limit, self.__km_driven
         )
 
 
 if __name__ == '__main__':
-    bot = Bot()
+    bot = Bot(1)
     user = User(id=1, name='klaus')
 
 
