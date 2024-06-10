@@ -1,7 +1,6 @@
 import {User} from "./user";
 
 export interface Message {
-  id: number,
   time_sent: Date,
   content: string
 }

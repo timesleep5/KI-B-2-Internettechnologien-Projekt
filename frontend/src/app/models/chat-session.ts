@@ -8,5 +8,5 @@ export interface Bot {
 export interface ChatSession {
   user: User,
   bot: Bot,
-  message: Message[]
+  messages: Message[]
 }
