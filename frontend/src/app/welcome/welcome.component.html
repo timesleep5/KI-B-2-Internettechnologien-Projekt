@@ -1,2 +1,7 @@
 <h1>Welcome!</h1>
-<a routerLink="/chat">Start a new Chat</a>
+
+<label for="name">Enter your username: </label>
+<input #nameInput id="name">
+<button type="button" (click)="createChatSessionFromName(nameInput.value)">Create User</button>
+
+<a *ngIf="currentChatId" routerLink="/chat">Go to your chat</a>
