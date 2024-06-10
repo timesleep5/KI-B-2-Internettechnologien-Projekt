@@ -8,7 +8,6 @@ class User(BaseModel):
 
 
 class Message(BaseModel):
-    id: int
     time_sent: datetime
     content: str
 
