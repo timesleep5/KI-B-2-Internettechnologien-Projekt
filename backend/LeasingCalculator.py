@@ -125,5 +125,6 @@ class LeasingCalculator:
         return term + added_spaces
 
 
-lc = LeasingCalculator(datetime(2024, 3, 1), 9, 8000, 2714)
-print(lc.get_summary())
+if __name__ == '__main__':
+    lc = LeasingCalculator(datetime(2024, 3, 1), 9, 8000, 2714)
+    print(lc.get_summary())

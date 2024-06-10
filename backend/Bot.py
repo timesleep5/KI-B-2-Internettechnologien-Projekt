@@ -1,20 +1,21 @@
 from datetime import datetime
 from enum import Enum
-from typing import Tuple, List
+from textwrap import dedent
+from typing import List
 
 from LeasingCalculator import LeasingCalculator
 from Models import UserMessage, BotMessage, User
 
 
 class BotAction(Enum):
-    NO_IDEA = 'no idea',
+    NO_IDEA = 'no idea'
     NO_CALCULATOR = 'no calculator'
 
-    HELP = 'help',
+    HELP = 'help'
 
-    SET_START_DATE = 'set the start date for the contract',
-    SET_RUNTIME_MONTHS = 'set the runtime in months for the contract',
-    SET_KM_LIMIT = 'set the km limit for the contract',
+    SET_START_DATE = 'set the start date for the contract'
+    SET_RUNTIME_MONTHS = 'set the runtime in months for the contract'
+    SET_KM_LIMIT = 'set the km limit for the contract'
     SET_KM_DRIVEN = 'set the driven kilometers'
 
     GET_SUMMARY = 'summary'
@@ -76,6 +77,7 @@ class Bot:
 
     def __derive_action_from_content(self, content: str) -> BotAction:
         words = StringManipulation.to_words(content)
+        print('\n\n')
         print(words)
         for word in words:
             for keyword_list in keywords_to_actions.keys():
@@ -116,7 +118,7 @@ class Bot:
                     f'Unfortunately, there is still some missing data from your contract:\n'
                     + self.__list_of_missing_variables())
         elif message_for_action.startswith('help'):
-            return """
+            return dedent("""
             Hi, I'm here to help you calculate everything in your leasing contract of BMW or MINI.
             Just give me the most important pieces data of your contract, and we can start! 
             These pieces are: 
@@ -129,7 +131,7 @@ class Bot:
             I'm not the brightest, so you have to keep a simple syntax if you want to set the data. 
             It should be of the following format: 
                 [keyword, you can use the ones in the braces above]: [value without unit]
-            Alright, that would be all. Let's start!"""
+            Alright, that would be all. Let's start!""")
         else:
             return 'I\'m sorry, I have no idea what you are talking about.'
 
@@ -158,8 +160,8 @@ class Bot:
             self.__build_calculator()
 
     def __calculator_can_be_built(self) -> bool:
-        return (self.__calculator is not None
-                and self.__start_date is not None
+        return (self.__start_date is not None
+                and self.__runtime_months is not None
                 and self.__km_limit is not None
                 and self.__km_driven)
 
@@ -169,8 +171,20 @@ class Bot:
         )
 
 
-bot = Bot()
-print(bot.respond_to(
-    UserMessage(id=1, time_sent=datetime.now(), content='driven: 20', user=User(id=1, name='klaus'))).content)
-print(bot.respond_to(
-    UserMessage(id=1, time_sent=datetime.now(), content='summary', user=User(id=1, name='klaus'))).content)
+if __name__ == '__main__':
+    bot = Bot()
+    user = User(id=1, name='klaus')
+
+
+    def get_answer_to(msg):
+        message = UserMessage(id=1, time_sent=datetime.now(), content=msg, user=user)
+        response = bot.respond_to(message)
+        print(response.content)
+
+
+    get_answer_to('help')
+    get_answer_to('driven: 2714')
+    get_answer_to('date: 01-03-2024')
+    get_answer_to('limit: 8000')
+    get_answer_to('months: 9')
+    get_answer_to('summary')
