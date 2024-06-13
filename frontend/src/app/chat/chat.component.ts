@@ -3,9 +3,11 @@ import {ChatService} from "../chat.service";
 import {ActivatedRoute} from "@angular/router";
 import {ChatSession} from "../models/chat-session";
 import {BotMessage, Message, UserMessage} from "../models/message";
-import {DatePipe, NgClass, NgForOf} from "@angular/common";
+import {DatePipe, NgClass, NgForOf, NgStyle} from "@angular/common";
 import {User} from "../models/user";
 import {FormsModule} from "@angular/forms";
+import {UserComponent} from "../user/user.component";
+import {NotificationService} from "../notification.service";
 
 @Component({
   selector: 'app-chat',
@@ -14,7 +16,9 @@ import {FormsModule} from "@angular/forms";
     NgClass,
     NgForOf,
     DatePipe,
-    FormsModule
+    FormsModule,
+    NgStyle,
+    UserComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -28,6 +32,7 @@ export class ChatComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private chatService: ChatService,
+    private notificationService: NotificationService,
   ) {
     this.chatId = 0;
   }
@@ -47,18 +52,21 @@ export class ChatComponent implements OnInit {
 
   sendMessage(): void {
     if (this.newMessageContent.trim()) {
-      const userMessage: UserMessage = this.createUserMessage()
-      this.chatSession?.messages.push(userMessage);
-      this.newMessageContent = '';
-
+      const userMessage = this.getUserMessage()
       this.chatService.sendMessage(this.chatId, userMessage)
-        .subscribe((botResponse: BotMessage) => {
-            if (botResponse) {
-              this.chatSession?.messages.push(botResponse);
-            }
-          }
+        .subscribe(
+          (botResponse: BotMessage) => this.processBotResponse(botResponse)
         );
+    } else {
+      this.notificationService.showError("Messages has to have a content", "Sending message failed");
     }
+  }
+
+  private getUserMessage(): UserMessage {
+    const userMessage: UserMessage = this.createUserMessage()
+    this.chatSession?.messages.push(userMessage);
+    this.newMessageContent = '';
+    return userMessage;
   }
 
   private createUserMessage(): UserMessage {
@@ -67,6 +75,14 @@ export class ChatComponent implements OnInit {
       content: this.newMessageContent.trim(),
       user: this.chatSession?.user
     } as UserMessage;
+  }
+
+  private processBotResponse(response: BotMessage) {
+    if (response) {
+      this.chatSession?.messages.push(response);
+    } else {
+      this.notificationService.showError("No answer from the bot.", "Server Error");
+    }
   }
 
   getMessages(): Message[] {

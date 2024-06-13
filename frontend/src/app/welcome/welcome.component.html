@@ -3,5 +3,3 @@
 <label for="name">Enter your username: </label>
 <input #nameInput id="name">
 <button type="button" (click)="createChatSessionFromName(nameInput.value)">Create User</button>
-
-<a *ngIf="currentChatId" routerLink="/chat">Go to your chat</a>
