@@ -1,0 +1,26 @@
+.users-container {
+  max-width: 25vw;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+  overflow-y: auto;
+  height: 75vh; /* Adjust as needed */
+}
+
+.users-container h3 {
+  margin: 0 0 10px;
+}
+
+.users-container > .user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.users-container > .user-entry {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #333;
+}

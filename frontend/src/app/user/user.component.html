@@ -1,0 +1,6 @@
+<div class="users-container">
+  <h3>Currently Logged-in Users</h3>
+  <div *ngFor="let user of loggedInUsers" class="user-list">
+    <div class="user-entry">{{ user.name }}</div>
+  </div>
+</div>
