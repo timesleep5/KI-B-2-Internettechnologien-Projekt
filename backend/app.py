@@ -55,6 +55,13 @@ class Database:
             raise HTTPException(status_code=404, detail="Bot not found")
         return self.bots[chat_id]
 
+    async def get_logged_in_users(self) -> List[User]:
+        users = []
+        for chat_session in self.chat_sessions.values():
+            users.append(chat_session.user)
+
+        return users
+
 
 database = Database()
 app = FastAPI()
@@ -85,6 +92,11 @@ async def react_to_user_message(chat_id: int, message: UserMessage):
 @app.get("/chats/id/{chat_id}", response_model=ChatSession)
 async def get_chat_session(chat_id: int):
     return await database.get_chat_session(chat_id)
+
+
+@app.get("/users", response_model=List[User])
+async def get_logged_in_users():
+    return await database.get_logged_in_users()
 
 
 if __name__ == "__main__":
