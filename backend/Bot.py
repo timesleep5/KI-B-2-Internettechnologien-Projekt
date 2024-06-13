@@ -9,8 +9,9 @@ from ChatModels import UserMessage, BotMessage, User
 
 class BotAction(Enum):
     NO_IDEA = 'no idea'
-    NO_CALCULATOR = 'no calculator'
+    SUMMARY_VALUES_MISSING = 'missing values'
 
+    GREETING = 'hi'
     HELP = 'help'
 
     SET_START_DATE = 'set the start date for the contract'
@@ -28,6 +29,7 @@ class KeywordList:
 
 keywords_to_actions = {
     KeywordList(['help', 'clueless', 'instructions', 'handbook']): BotAction.HELP,
+    KeywordList(['hi', 'morning', 'hello']): BotAction.GREETING,
 
     KeywordList(['start', 'date']): BotAction.SET_START_DATE,
     KeywordList(['runtime', 'months']): BotAction.SET_RUNTIME_MONTHS,
@@ -71,10 +73,10 @@ class Bot:
         message_for_action: str
         try:
             action_to_take = self.__derive_action_from_content(content)
-            message_for_action = self.__act(action_to_take, content)
-        except Exception as e:
-            message_for_action = BotAction.NO_IDEA.value
-        response_content = self.__build_response_content(message_for_action)
+            self.__act(action_to_take, content)
+        except Exception:
+            action_to_take = BotAction.NO_IDEA
+        response_content = self.__build_response_content(action_to_take)
         return self.__build_response(response_content)
 
     def __derive_action_from_content(self, content: str) -> BotAction:
@@ -91,7 +93,7 @@ class Bot:
     def __change_action_if_original_not_viable(self, action: BotAction) -> BotAction:
         requires_calculator = action == BotAction.GET_SUMMARY
         if requires_calculator and not self.__summary_builder:
-            return BotAction.NO_CALCULATOR
+            return BotAction.SUMMARY_VALUES_MISSING
         else:
             return action
 
@@ -110,32 +112,36 @@ class Bot:
 
         return str(action_to_take.value)
 
-    def __build_response_content(self, message_for_action: str) -> str:
-        if message_for_action.startswith('set'):
-            return f'Thanks for your input! I {message_for_action}. If you need anything else, let me know.'
-        elif message_for_action.startswith('summary'):
-            return f'Here is your summary: \n{self.__summary_builder.get_summary()}'
-        elif message_for_action.startswith('no calculator'):
-            return ('I understand what you want from me, but I\'m sorry, I can\'t give you that.\n'
-                    f'Unfortunately, there is still some missing data from your contract:\n'
-                    + self.__list_of_missing_variables())
-        elif message_for_action.startswith('help'):
-            return dedent("""
-            Hi, I'm here to help you calculate everything in your leasing contract of BMW or MINI.
-            Just give me the most important pieces data of your contract, and we can start! 
-            These pieces are: 
-              - The start date of the contract in the format 'DD-MM-YYYY' (date)
-              - The runtime of your contract in months (months)
-              - The kilometer limit of your contract (limit)
-              - The kilometers you already drove so far (driven)
-            
-            For me to understand you better, I should mention a few things:
-            I'm not the brightest, so you have to keep a simple syntax if you want to set the data. 
-            It should be of the following format: 
-                [keyword, you can use the ones in the braces above]: [value without unit]
-            Alright, that would be all. Let's start!""")
-        else:
-            return 'I\'m sorry, I have no idea what you are talking about.'
+    def __build_response_content(self, action: BotAction) -> str:
+        if action.value.startswith('set'):
+            return f'Thanks for your input! I {action.value}. If you need anything else, let me know.'
+        match action:
+            case BotAction.GREETING:
+                return ('Hi! I\'m here to help you calculate details of your leasing contract of JAWA cars. '
+                        'If you require any more information, ask for HELP.')
+            case BotAction.GET_SUMMARY:
+                return f'Here is your summary: \n{self.__summary_builder.get_summary()}'
+            case BotAction.SUMMARY_VALUES_MISSING:
+                return ('I understand what you want from me, but I\'m sorry, I can\'t give you that.\n'
+                        f'Unfortunately, there is still some missing data from your contract:\n'
+                        + self.__list_of_missing_variables())
+            case BotAction.HELP:
+                return dedent("""
+                Hi, I'm here to help you calculate everything in your leasing contract of BMW or MINI.
+                Just give me the most important pieces data of your contract, and we can start! 
+                These pieces are: 
+                  - The start date of the contract in the format 'DD-MM-YYYY' (date)
+                  - The runtime of your contract in months (months)
+                  - The kilometer limit of your contract (limit)
+                  - The kilometers you already drove so far (driven)
+                
+                For me to understand you better, I should mention a few things:
+                I'm not the brightest, so you have to keep a simple syntax if you want to set the data. 
+                It should be of the following format: 
+                    [keyword, you can use the ones in the braces above]: [value without unit]
+                Alright, that would be all. Let's start!""")
+            case _:
+                return 'I\'m sorry, I have no idea what you are talking about.'
 
     def __list_of_missing_variables(self) -> str:
         missing_variables = []
