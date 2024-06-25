@@ -25,19 +25,23 @@ class SummaryBuilder:
             runtime_months=runtime_months
         )
         self.__km_driven = km_driven
-        self.__summary_values = self.__calculate_summary()
+        self.__summary_data = self.__calculate_summary()
 
     def get_summary(self) -> str:
-        header, footer = self.__header_and_footer()
-        summary = header + '\n'
+        return self.get_summary_from_data(self.__summary_data)
+        # header, footer = self.__header_and_footer()
+        # summary = header + '\n'
+        #
+        # for key in self.__summary_data.keys():
+        #     key_name = self.__insert_spaces(key + ':')
+        #     entry = f'{key_name}{self.__summary_data[key]}\n'
+        #     summary += entry
+        #
+        # summary += footer
+        # return summary
 
-        for key in self.__summary_values.keys():
-            key_name = self.__insert_spaces(key + ':')
-            entry = f'{key_name}{self.__summary_values[key]}\n'
-            summary += entry
-
-        summary += footer
-        return summary
+    def get_summary_data(self) -> Dict[str, Any]:
+        return self.__summary_data
 
     def __calculate_end_date(self, start_date: datetime, runtime_months: int) -> datetime:
         end_date = start_date + relativedelta(months=runtime_months)
@@ -109,20 +113,37 @@ class SummaryBuilder:
         daily_average_from_now = remaining_km / remaining_days
         return self.__round(daily_average_from_now)
 
-    def __round(self, value):
+    @staticmethod
+    def get_summary_from_data(data: Dict[str, Any]) -> str:
+        header, footer = SummaryBuilder.__header_and_footer()
+        summary = header + '\n'
+
+        for key in data.keys():
+            key_name = SummaryBuilder.__insert_spaces(key + ':')
+            entry = f'{key_name}{data[key]}\n'
+            summary += entry
+
+        summary += footer
+        return summary
+
+    @staticmethod
+    def __round(value):
         decimals = 1
         return round(value, decimals)
 
-    def __header_and_footer(self) -> Tuple[str, str]:
-        separator = self.__separator_of_length(18)
+    @staticmethod
+    def __header_and_footer() -> Tuple[str, str]:
+        separator = SummaryBuilder.__separator_of_length(18)
         header = separator + ' SUMMARY ' + separator
-        footer = self.__separator_of_length(len(header))
+        footer = SummaryBuilder.__separator_of_length(len(header))
         return header, footer
 
-    def __separator_of_length(self, length: int) -> str:
+    @staticmethod
+    def __separator_of_length(length: int) -> str:
         return length * '~'
 
-    def __insert_spaces(self, term: str):
+    @staticmethod
+    def __insert_spaces(term: str):
         number_of_chars = 30
         remaining_chars = number_of_chars - len(term)
         added_spaces = remaining_chars * ' '

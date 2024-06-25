@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from Bot import Bot
-from ChatModels import *
+from backend.datastructures.ChatModels import *
 
 
 class ChatSession(BaseModel):

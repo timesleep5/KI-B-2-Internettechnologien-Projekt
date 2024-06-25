@@ -18,6 +18,3 @@ class UserMessage(Message):
 
 class BotMessage(Message):
     pass
-
-
-

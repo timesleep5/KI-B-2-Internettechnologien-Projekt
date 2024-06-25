@@ -1,0 +1,132 @@
+{
+  "start": {
+    "yes": "load_summary",
+    "sure": "load_summary",
+    "okay": "load_summary",
+    "absolutely": "load_summary",
+    "no": "start",
+    "not really": "start",
+    "nah": "start",
+    "nope": "start",
+    "restart": "restart",
+    "help": "help"
+  },
+  "restart": {
+    "yes": "start",
+    "sure": "start",
+    "okay": "start",
+    "absolutely": "start",
+    "no": "previous",
+    "not really": "previous",
+    "nah": "previous",
+    "nope": "previous",
+    "abort": "previous",
+    "cancel": "previous",
+    "back": "previous",
+    "help": "help"
+  },
+  "help": {
+    "restart": "restart"
+  },
+  "load_summary": {
+    "yes": "summary_overview",
+    "sure": "summary_overview",
+    "okay": "summary_overview",
+    "absolutely": "summary_overview",
+    "no": "input_startdate",
+    "not now": "input_startdate",
+    "later": "input_startdate",
+    "restart": "restart",
+    "help": "help"
+  },
+  "summary_overview": {
+    "yes": "load_summary",
+    "sure": "load_summary",
+    "okay": "load_summary",
+    "absolutely": "load_summary",
+    "no": "restart",
+    "not really": "restart",
+    "nah": "restart",
+    "nope": "restart",
+    "restart": "restart",
+    "help": "help"
+  },
+  "show_loaded_summary": {
+    "yes": "summary_overview",
+    "sure": "summary_overview",
+    "okay": "summary_overview",
+    "absolutely": "summary_overview",
+    "no": "restart",
+    "not really": "restart",
+    "nah": "restart",
+    "nope": "restart",
+    "restart": "restart",
+    "help": "help"
+  },
+  "input_startdate": {
+    "restart": "restart",
+    "help": "help"
+  },
+  "input_months": {
+    "restart": "restart",
+    "help": "help"
+  },
+  "input_km_limit": {
+    "restart": "restart",
+    "help": "help"
+  },
+  "input_km_driven": {
+    "restart": "restart",
+    "help": "help"
+  },
+  "ask_for_changes": {
+    "yes": "changes",
+    "sure": "changes",
+    "okay": "changes",
+    "change": "changes",
+    "modify": "changes",
+    "no": "show_summary",
+    "not really": "show_summary",
+    "nah": "show_summary",
+    "nope": "show_summary",
+    "restart": "restart",
+    "help": "help"
+  },
+  "changes": {
+    "start date": "input_startdate",
+    "months": "input_months",
+    "kilometer limit": "input_km_limit",
+    "driven kilometers": "input_km_driven",
+    "done": "show_summary",
+    "finished": "show_summary",
+    "summary": "show_summary",
+    "return": "show_summary",
+    "back": "show_summary",
+    "no": "show_summary",
+    "nah": "show_summary",
+    "nope": "show_summary",
+    "nothing": "show_summary",
+    "restart": "restart",
+    "help": "help"
+  },
+  "show_summary": {
+    "yes": "save_summary",
+    "sure": "save_summary",
+    "okay": "save_summary",
+    "absolutely": "save_summary",
+    "no": "restart",
+    "not really": "restart",
+    "nah": "restart",
+    "nope": "restart",
+    "restart": "restart",
+    "help": "help"
+  },
+  "save_summary": {
+    "restart": "restart",
+    "help": "help"
+  },
+  "exit": {
+    "restart": "restart",
+    "help": "help"
+  }
+}

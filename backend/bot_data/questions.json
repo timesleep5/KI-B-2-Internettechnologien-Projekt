@@ -1,0 +1,78 @@
+{
+  "start": [
+    "Should we start a new leasing contract summary? Please respond with 'yes'.",
+    "Would you like to begin creating a new leasing contract summary? Type 'yes' to start."
+  ],
+  "restart": [
+    "Would you like to start over with a new leasing contract?",
+    "Do you want to clear the current data and begin again?",
+    "Please confirm if you want to restart the process."
+  ],
+  "help": [
+    "This chatbot helps you create a new leasing contract summary or load an existing one.",
+    "You can either start by answering questions to create a new summary or load a saved summary.",
+    "To create a new summary, answer the questions prompted. To load a saved summary, follow the instructions when asked."
+  ],
+  "load_summary": [
+    "Do you want to load a saved summary? Please respond with 'yes' or 'no'.",
+    "Would you like to load an existing saved summary? Type 'yes' or 'no'.",
+    "Do you have a saved summary that you would like to load? Please reply 'yes' or 'no'."
+  ],
+  "summary_overview": [
+    "Here are the IDs of your saved summaries:",
+    "These are the available saved summaries:",
+    "Review the IDs of your saved summaries:"
+  ],
+  "show_loaded_summary": [
+    "Here is the loaded summary for your leasing contract. You cannot make any changes.",
+    "This is the summary you have loaded. No changes can be made at this stage.",
+    "Review the loaded summary below. Note that you cannot modify any details."
+  ],
+  "input_startdate": [
+    "Please provide the start date of the leasing contract in the format DD-MM-YYYY.",
+    "Enter the start date for the contract (DD-MM-YYYY).",
+    "What is the start date of the contract? Use the format DD-MM-YYYY."
+  ],
+  "input_months": [
+    "How many months will the contract last? Please enter an integer.",
+    "Enter the duration of the contract in months (as an integer).",
+    "For how many months is the leasing contract valid? Provide a number."
+  ],
+  "input_km_limit": [
+    "What is the kilometer limit for the duration of the contract?",
+    "Enter the maximum kilometers allowed during the contract period.",
+    "How many kilometers are you allowed to drive during the contract?"
+  ],
+  "input_km_driven": [
+    "How many kilometers have you driven during the contract?",
+    "Enter the number of kilometers driven so far.",
+    "Provide the total kilometers you have driven under the contract."
+  ],
+  "ask_for_changes": [
+    "Would you like to make any changes to your leasing contract? Here is the entered data:",
+    "Do you need to modify any details in your contract? Review your data here:",
+    "Please confirm if you need to make any adjustments. Your current data:"
+  ],
+  "changes": [
+    "What changes would you like to make to your leasing contract? Options: start date, months, kilometer limit, driven kilometers.",
+    "Specify the details you want to modify. Your options are: start date, months, kilometer limit, driven kilometers.",
+    "Please provide the new information for the changes. Options: start date, months, kilometer limit, driven kilometers."
+  ],
+  "show_summary": [
+    "Here is the final summary of your leasing contract:",
+    "Please review the final summary of your leasing contract:",
+    "This is the final version of your leasing contract summary:"
+  ],
+  "save_summary": [
+    "Your summary has been saved successfully. The ID of your saved summary is:",
+    "Summary saved! Your summary ID is:",
+    "Your summary was saved. Here is your summary ID:",
+    "Success! Your summary has been saved with the following ID:",
+    "The summary has been saved. Your summary ID is:"
+  ],
+  "exit": [
+    "Thank you for using the leasing contract chatbot. Have a great day!",
+    "Goodbye! Feel free to return if you need any further assistance.",
+    "Your session has ended. If you need more help, don't hesitate to come back."
+  ]
+}
