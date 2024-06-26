@@ -1,6 +1,6 @@
 from enum import Enum
 
-from backend.utils.Exceptions import NoMatchingStateException
+from utils.Exceptions import NoMatchingStateException
 
 
 class State(Enum):

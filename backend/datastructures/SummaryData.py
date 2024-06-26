@@ -43,8 +43,8 @@ class SummaryData:
     def __repr__(self):
         start_date_str = self.__data['start_date'].strftime("%d.%m.%Y") if self.__data['start_date'] else 'None'
         return (
-            f"  start_date: {start_date_str},\n"
+            f"  start date: {start_date_str},\n"
             f"  months: {self.__data['months']},\n"
-            f"  km_limit: {self.__data['km_limit']},\n"
-            f"  km_driven: {self.__data['km_driven']}\n"
+            f"  km limit: {self.__data['km_limit']},\n"
+            f"  km driven: {self.__data['km_driven']}\n"
         )

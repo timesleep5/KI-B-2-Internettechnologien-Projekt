@@ -28,7 +28,7 @@ def find_date(content: str) -> datetime:
 
 
 def find_number(content: str) -> int:
-    pattern = re.compile(r'\b\d+\b')
+    pattern = re.compile(r'\b\d+(?=\b|\D)')
     matches = pattern.findall(content)
 
     if matches:

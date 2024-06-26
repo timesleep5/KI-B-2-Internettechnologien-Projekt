@@ -2,14 +2,14 @@ import random
 from datetime import datetime
 from typing import List, Dict
 
-from backend.datastructures.ChatModels import UserMessage, BotMessage, User
-from backend.datastructures.States import State, get_state
+from datastructures.ChatModels import UserMessage, BotMessage, User
+from datastructures.States import State, get_state
 from SummaryBuilder import SummaryBuilder
-from backend.utils.Exceptions import NoKeywordFoundException, NoMatchingStateException
-from backend.datastructures.SummaryData import SummaryData
-from backend.utils.fs_utils import read_json, Paths, saved_summary_ids, \
+from utils.Exceptions import NoKeywordFoundException, NoMatchingStateException
+from datastructures.SummaryData import SummaryData
+from utils.fs_utils import read_json, Paths, saved_summary_ids, \
     save_json, read_summary_with_id
-from backend.utils.regex_utils import find_number, find_date, find_summary_id
+from utils.regex_utils import find_number, find_date, find_summary_id
 
 
 class Bot:
@@ -44,6 +44,11 @@ class Bot:
         self.__questions = read_json(Paths.BOT_QUESTIONS)
         self.__fallbacks = read_json(Paths.BOT_FALLBACKS)
         self.__transitions = read_json(Paths.BOT_TRANSITIONS)
+        self.__greetings = read_json(Paths.BOT_GREETINGS)
+
+    def get_greeting(self) -> BotMessage:
+        message = random.choice(self.__greetings)
+        return self.__build_response(message)
 
     def get_start_message(self) -> BotMessage:
         message = self.__random_question_of_current_state()
@@ -139,7 +144,7 @@ class Bot:
             self.__loaded_summary_id = find_summary_id(content)
             return self.__switch_state_and_respond(State.SHOW_LOADED_SUMMARY)
         except ValueError:
-            return self.__random_fallback_response()
+            return self.__response_without_functionality(content)
 
     def __handle_show_loaded_summary(self, content: str) -> BotMessage:
         return self.__response_without_functionality(content)
@@ -238,9 +243,8 @@ class Bot:
 
     def __switch_to_previous_and_respond(self) -> BotMessage:
         self.__switch_state(self.__previous_state)
-        prefix = "Aborting.\n"
         content = self.__random_question_of_current_state()
-        return self.__build_response(prefix + content)
+        return self.__build_response(content)
 
     def __switch_state(self, state: State) -> None:
         self.__previous_state = self.__state
@@ -253,7 +257,10 @@ class Bot:
 
     def __random_fallback_response(self) -> BotMessage:
         fallback = self.__random_fallback()
-        return self.__build_response(fallback)
+        return BotMessage(
+            time_sent=datetime.now(),
+            content=fallback
+        )
 
     def __random_fallback(self) -> str:
         return random.choice(self.__fallbacks)
@@ -304,14 +311,14 @@ class Bot:
             case State.INPUT_KM_DRIVEN:
                 additional_info = f'{self.__summary_data.get_km_driven()} km'
         if additional_info:
-            return f'I saved: {additional_info}\n{content}'
+            return f'I saved: {additional_info}.\n{content}'
         else:
             return content
 
     def __add_summary_overview(self, content: str) -> str:
         self.__update_saved_summaries()
         if self.__saved_summaries:
-            formatted_numbers = ', '.join(str(num) for num in self.__saved_summaries)
+            formatted_numbers = ', '.join(str(num) for num in sorted(self.__saved_summaries))
             return f'{content}\n{formatted_numbers}\nPlease choose one.'
         else:
             self.__switch_state(State.START)
@@ -322,20 +329,20 @@ class Bot:
         if self.__loaded_summary_id in self.__saved_summaries:
             summary_data = read_summary_with_id(self.__loaded_summary_id)
             summary = SummaryBuilder.get_summary_from_data(summary_data)
-            return f'{content}\n{summary}\nDo you want to load another summary?'
+            return f'{content}\n\n{summary}\n\nDo you want to load another summary?'
         else:
             self.__switch_state(State.SUMMARY_OVERVIEW)
             return 'This id is invalid. Please provide a different id.'
 
     def __add_entered_data(self, content: str) -> str:
         entered_data = str(self.__summary_data)
-        return f'{content}\n{entered_data}'
+        return f'{content}\n\n{entered_data}'
 
     def __add_summary(self, content: str) -> str:
         if self.__summary_data.is_complete():
             self.__build_summary_builder()
             summary = self.__summary_builder.get_summary()
-            return f'{content}\n{summary}\nDo you want to save your summary?'
+            return f'{content}\n\n{summary}\n\nDo you want to save your summary?'
         else:
             self.__switch_state(State.ASK_FOR_CHANGES)
             return f'Summary cannot be built because some values are missing. Do you want to enter the missing values?'

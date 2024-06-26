@@ -10,6 +10,7 @@ class Paths:
     BOT_QUESTIONS = f'{BOT_DATA_DIR}/questions.json'
     BOT_FALLBACKS = f'{BOT_DATA_DIR}/fallback.json'
     BOT_TRANSITIONS = f'{BOT_DATA_DIR}/transitions.json'
+    BOT_GREETINGS = f'{BOT_DATA_DIR}/greetings.json'
 
     SUMMARY_DIR = 'summaries'
     SUMMARY_PATTERN = r'summary_(\d{2}).json'

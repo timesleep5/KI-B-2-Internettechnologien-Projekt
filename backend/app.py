@@ -5,7 +5,9 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from Bot import Bot
-from backend.datastructures.ChatModels import *
+from datastructures.ChatModels import *
+
+from datastructures.ChatModels import UserMessage, BotMessage, User
 
 
 class ChatSession(BaseModel):
@@ -23,12 +25,17 @@ class Database:
     async def create_chat_session_from_user(self, name: str) -> int:
         with self.lock:
             self.chat_counter += 1
-            user = User(name=name)
-            chat_session = ChatSession(user=user, messages=[])
-            self.chat_sessions[self.chat_counter] = chat_session
 
             bot = Bot()
+            greeting = bot.get_greeting()
+            start_message = bot.get_start_message()
             self.bots[self.chat_counter] = bot
+
+            user = User(name=name)
+            chat_session = ChatSession(user=user, messages=[])
+            chat_session.messages.append(greeting)
+            chat_session.messages.append(start_message)
+            self.chat_sessions[self.chat_counter] = chat_session
 
             return self.chat_counter
 
