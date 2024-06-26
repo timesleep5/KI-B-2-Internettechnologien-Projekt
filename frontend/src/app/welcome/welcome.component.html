@@ -1,5 +1,23 @@
-<h1>Welcome!</h1>
-
-<label for="name">Enter your username: </label>
-<input #nameInput id="name">
-<button type="button" (click)="createChatSessionFromName(nameInput.value)">Create User</button>
+<div class="welcome-container">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar class="welcome-logo"></div>
+      <mat-card-title>
+        <h1>Welcome!</h1>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Enter your username</mat-label>
+        <input matInput #nameInput id="name" (keyup.enter)="createChatSessionFromName(nameInput.value)">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-hint>Press Enter or click "Create User" to proceed</mat-hint>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="createChatSessionFromName(nameInput.value)"
+              [disabled]="loading">
+        <mat-progress-spinner *ngIf="loading" [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+        <span *ngIf="!loading">Create User</span>
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

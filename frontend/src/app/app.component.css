@@ -1,0 +1,8 @@
+.app-content {
+  padding: 80px;
+  padding-bottom: 60px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  height: 100vh;
+  box-sizing: border-box;
+}

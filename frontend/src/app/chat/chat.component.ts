@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ChatService} from "../chat.service";
 import {ActivatedRoute} from "@angular/router";
 import {ChatSession} from "../models/chat-session";
@@ -8,6 +8,9 @@ import {User} from "../models/user";
 import {FormsModule} from "@angular/forms";
 import {UserComponent} from "../user/user.component";
 import {NotificationService} from "../notification.service";
+import {MatButton} from "@angular/material/button";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
 
 @Component({
   selector: 'app-chat',
@@ -18,16 +21,21 @@ import {NotificationService} from "../notification.service";
     DatePipe,
     FormsModule,
     NgStyle,
-    UserComponent
+    UserComponent,
+    MatButton,
+    MatLabel,
+    MatFormField,
+    MatInput
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
   private chatId: number;
   private chatSession?: ChatSession;
   protected user?: User;
   protected newMessageContent: string = '';
+  @ViewChild('chatContainer') private chatContainer!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +47,10 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.getChat();
+  }
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   private getChat(): void {
@@ -95,5 +107,11 @@ export class ChatComponent implements OnInit {
 
   isUserMessage(message: Message): boolean {
     return 'user' in message;
+  }
+
+  private scrollToBottom() {
+    try {
+      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch (err) { }
   }
 }

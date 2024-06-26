@@ -1,8 +1,10 @@
-/* chat.component.css */
+
 .main-container {
   display: flex;
-  justify-content: center;
-  height: 100vh; /* Adjust as needed */
+}
+
+.chat-window-container {
+  flex: 1;
 }
 
 .chat-container {
@@ -11,12 +13,12 @@
   width: 50vw;
   margin: 0 auto;
   padding: 10px;
-  border: 1px solid #333;
+  border: 1px solid var(--input-border-color); /* Use global input border color */
   border-radius: 5px;
-  background-color: #1e1e1e;
-  color: #f1f1f1;
+  background-color: var(--card-background); /* Use global card background color */
+  color: var(--text-color); /* Use global text color */
   overflow-y: auto;
-  height: 75vh; /* Adjust as needed */
+  height: calc(85% - 60px); /* Adjust to leave space for message input */
 }
 
 .message {
@@ -31,14 +33,14 @@
 .user-message {
   align-self: flex-end;
   text-align: right;
-  background-color: #444;
-  color: #f1f1f1;
+  background-color: var(--message-bg-user); /* Use dark mode user message background color */
+  color: var(--message-text-user); /* Use dark mode user message text color */
 }
 
 .bot-message {
   align-self: flex-start;
-  background-color: #2a2a2a;
-  color: #f1f1f1;
+  background-color: var(--message-bg-bot); /* Use dark mode bot message background color */
+  color: var(--message-text-bot); /* Use dark mode bot message text color */
 }
 
 .message-content {
@@ -55,48 +57,46 @@
 
 .time-sent {
   font-size: 0.8em;
-  color: #888;
+  color: var(--text-color); /* Use global text color */
 }
 
 .message-input-container {
   display: flex;
   justify-content: center;
+  width: 50vw;
+  margin: 10px auto;
   padding: 10px;
-  margin-top: auto;
-  margin-bottom: 0;
-  border-top: 1px solid #333;
-  background-color: #2a2a2a;
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border-color);
+  border-radius: 5px;
 }
 
-.message-input-container form {
+.message-form {
   display: flex;
   width: 100%;
-  max-width: 600px;
+  max-width: 100%;
 }
 
-.message-input-container input[type="text"] {
+.message-input-field {
   flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #555;
-  border-radius: 5px 0 0 5px;
-  background-color: #333;
-  color: #f1f1f1;
-  outline: none;
+  margin-right: 10px;
+  color: var(--text-color);
 }
 
-.message-input-container input[type="text"]::placeholder {
-  color: #888;
-}
-
-.message-input-container button {
-  padding: 10px 20px;
+.send-button {
+  min-width: 100px;
+  background-color: var(--button-bg); /* Use dark mode button background color */
+  color: #fff; /* Use white text color for buttons */
   border: none;
-  border-radius: 0 5px 5px 0;
-  background-color: #007bff;
-  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
 }
 
-.message-input-container button:hover {
-  background-color: #0056b3;
+.send-button:hover {
+  background-color: #0056b3; /* Adjust hover color for better contrast */
+}
+
+.app-user-container {
+  width: 300px;
 }

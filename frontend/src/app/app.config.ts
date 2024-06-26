@@ -6,6 +6,7 @@ import {provideClientHydration} from '@angular/platform-browser';
 import {provideHttpClient} from "@angular/common/http";
 import {provideToastr} from "ngx-toastr";
 import {provideAnimations} from "@angular/platform-browser/animations";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const BASE_URL = "http://127.0.0.1:8080";
 
@@ -15,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(),
     provideAnimations(),
-    provideToastr(),
+    provideToastr(), provideAnimationsAsync(),
   ]
 };

@@ -3,19 +3,40 @@ import {Router, RouterLink} from "@angular/router";
 import {ChatService} from "../chat.service";
 import {NgIf} from "@angular/common";
 import {NotificationService} from "../notification.service";
+import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatError, MatFormField, MatHint, MatLabel} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatButton, MatIconButton} from "@angular/material/button";
+import {MatIcon} from "@angular/material/icon";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+
 
 @Component({
   selector: 'app-welcome',
   standalone: true,
   imports: [
     RouterLink,
-    NgIf
+    NgIf,
+    MatCard,
+    MatCardHeader,
+    MatCardContent,
+    MatFormField,
+    MatInput,
+    MatButton,
+    MatLabel,
+    MatCardTitle,
+    MatIcon,
+    MatProgressSpinner,
+    MatError,
+    MatCardFooter,
+    MatHint,
+    MatIconButton
   ],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css'
 })
 export class WelcomeComponent {
-
+  loading = false;
   currentChatId?: number;
 
   constructor(
@@ -27,8 +48,10 @@ export class WelcomeComponent {
 
   createChatSessionFromName(name: string): void {
     if (name.trim().length > 4) {
+      this.loading = true;
       this.chatService.createChatSessionFromName(name)
         .subscribe((chatId: number) => {
+            this.loading = false;
             this.currentChatId = chatId;
             this.router.navigateByUrl(`/chat/${this.currentChatId}`);
           }

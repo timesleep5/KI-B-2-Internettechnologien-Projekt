@@ -1,27 +1,31 @@
 <div class="main-container">
-  <div class="chat-container">
-    <div *ngFor="let message of getMessages()" class="message" [ngClass]="{
-  'user-message': isUserMessage(message),
-  'bot-message': !isUserMessage(message)
-  }">
-      <div class="message-content">
-        <p [ngStyle]="{'white-space': 'pre-line'}">
-          {{ message.content }}
-        </p>
-        <span class="time-sent">{{ message.time_sent | date:'shortTime' }}</span>
+  <div class="chat-window-container">
+    <div class="chat-container mat-elevation-z2">
+      <div *ngFor="let message of getMessages()" class="message" [ngClass]="{
+      'user-message': isUserMessage(message),
+      'bot-message': !isUserMessage(message)
+    }">
+        <div class="message-content">
+          <p [ngStyle]="{'white-space': 'pre-line'}">
+            {{ message.content }}
+          </p>
+          <span class="time-sent">{{ message.time_sent | date:'shortTime' }}</span>
+        </div>
       </div>
     </div>
 
     <div class="message-input-container">
-      <form (submit)="sendMessage()">
-        <input type="text" [(ngModel)]="newMessageContent" name="messageContent" placeholder="Type your message..."
-               required/>
-        <button type="submit">Send</button>
+      <form class="message-form" (submit)="sendMessage()">
+        <mat-form-field appearance="fill" class="message-input-field">
+          <mat-label>Type your message...</mat-label>
+          <input matInput [(ngModel)]="newMessageContent" name="messageContent" required>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" class="send-button">Send</button>
       </form>
     </div>
   </div>
 
-  <app-user></app-user>
+  <div class="app-user-container">
+    <app-user></app-user>
+  </div>
 </div>
-
-

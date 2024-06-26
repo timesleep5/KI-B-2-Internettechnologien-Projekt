@@ -21,10 +21,11 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
+              "src/assets/favicon.svg",
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "node_modules/ngx-toastr/toastr.css",
               "src/styles.css"
             ],
@@ -70,7 +71,7 @@
             }
           },
           "options": {
-            "browserTarget": "lease-bot:build",
+            "buildTarget": "lease-bot:build",
             "proxyConfig": "src/proxy.conf.json"
           },
           "defaultConfiguration": "development"
@@ -94,6 +95,7 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.css"
             ],
             "scripts": []
