@@ -1,1 +1,13 @@
-<p>imprint works!</p>
+<div class="main-container">
+  <div class="mat-card" *ngIf="imprintData">
+    <h1>Imprint</h1>
+    <p><strong>A project of:</strong> {{imprintData.creator}} (course of studies: {{imprintData.studies}}, semester: {{imprintData.semester}})</p>
+    <p><strong>for the lecture:</strong> {{imprintData.lecture}} (held by {{imprintData.lecturer}})</p>
+    <p><strong>at university:</strong> {{ imprintData.school }}</p>
+    <p><strong>Address:</strong> {{ imprintData.address }}</p>
+    <p><strong>Phone:</strong> {{ imprintData.phone }}</p>
+    <p><strong>Email: </strong> <a [href]="'mailto:' + imprintData.email">{{ imprintData.email }}</a></p>
+    <p><strong>Website: </strong> <a [href]="imprintData.website" target="_blank">{{ imprintData.website }}</a></p>
+  </div>
+</div>
+<div class="placeholder"></div>

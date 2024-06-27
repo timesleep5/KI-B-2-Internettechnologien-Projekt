@@ -1,0 +1,24 @@
+.main-container {
+  height: auto;
+}
+
+.mat-card h1 {
+  margin-bottom: 20px;
+}
+
+.mat-card p {
+  margin: 10px 0;
+}
+
+.mat-card a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.mat-card a:hover {
+  text-decoration: underline;
+}
+
+.placeholder {
+  height: 51vh;
+}
