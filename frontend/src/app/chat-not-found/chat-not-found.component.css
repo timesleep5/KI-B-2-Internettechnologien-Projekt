@@ -1,0 +1,9 @@
+.main-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 82vh;
+}
+
+.placeholder {
+  flex: 1;
+}
