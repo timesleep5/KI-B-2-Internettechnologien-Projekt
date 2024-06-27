@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {catchError, Observable, of} from "rxjs";
 import {ChatSession} from "./models/chat-session";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {BotMessage, UserMessage} from "./models/message";
+import {Message} from "./models/message";
 import {BASE_URL} from "./app.config";
 import {NotificationService} from "./notification.service";
 
@@ -37,11 +37,11 @@ export class ChatService {
       );
   }
 
-  sendMessage(chatId: number, message: UserMessage): Observable<BotMessage> {
+  sendMessage(chatId: number, message: Message): Observable<Message> {
     const url = `${this.SERVICE_URL}/id/${chatId}/message`;
-    return this.http.post<BotMessage>(url, message, this.httpOptions)
+    return this.http.post<Message>(url, message, this.httpOptions)
       .pipe(
-        catchError(this.handleError<BotMessage>(`sendMessage to chat id=${chatId}`))
+        catchError(this.handleError<Message>(`sendMessage to chat id=${chatId}`))
       )
   }
 

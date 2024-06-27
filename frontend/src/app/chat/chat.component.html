@@ -1,15 +1,15 @@
 <div class="main-container">
   <div class="chat-window-container">
-    <div class="chat-container mat-elevation-z2">
+    <div class="chat-container mat-elevation-z2" #chatContainer>
       <div *ngFor="let message of getMessages()" class="message" [ngClass]="{
-      'user-message': isUserMessage(message),
-      'bot-message': !isUserMessage(message)
-    }">
+        'user-message': !isBotMessage(message),
+        'bot-message': isBotMessage(message)
+      }">
         <div class="message-content">
           <p [ngStyle]="{'white-space': 'pre-line'}">
             {{ message.content }}
           </p>
-          <span class="time-sent">{{ message.time_sent | date:'shortTime' }}</span>
+          <span class="time-sent">{{message.sender}} {{ message.time_sent | date:'shortTime' }}</span>
         </div>
       </div>
     </div>

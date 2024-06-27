@@ -1,13 +1,6 @@
-import {User} from "./user";
-
 export interface Message {
   time_sent: Date,
+  sender: string,
   content: string
-}
-
-export interface UserMessage extends Message {
-  user: User
-}
-
-export interface BotMessage extends Message {
+  is_bot_message: boolean
 }

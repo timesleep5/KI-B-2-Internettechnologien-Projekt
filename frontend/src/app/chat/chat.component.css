@@ -1,6 +1,5 @@
-
 .main-container {
-  display: flex;
+  position: relative;
 }
 
 .chat-window-container {
@@ -15,7 +14,7 @@
   padding: 10px;
   border: 1px solid var(--input-border-color); /* Use global input border color */
   border-radius: 5px;
-  background-color: var(--card-background); /* Use global card background color */
+  background-color: var(--card-background);
   color: var(--text-color); /* Use global text color */
   overflow-y: auto;
   height: calc(85% - 60px); /* Adjust to leave space for message input */
@@ -66,7 +65,7 @@
   width: 50vw;
   margin: 10px auto;
   padding: 10px;
-  background-color: var(--input-background);
+  background-color: var(--card-background);
   border: 1px solid var(--input-border-color);
   border-radius: 5px;
 }
@@ -99,4 +98,7 @@
 
 .app-user-container {
   width: 300px;
+  margin-right: 10px;
+  position: absolute;
+  right: 0;
 }

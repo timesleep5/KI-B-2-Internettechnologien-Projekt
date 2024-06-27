@@ -1,8 +1,8 @@
-import {AfterViewChecked, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ChatService} from "../chat.service";
-import {ActivatedRoute} from "@angular/router";
+import {Router} from "@angular/router";
 import {ChatSession} from "../models/chat-session";
-import {BotMessage, Message, UserMessage} from "../models/message";
+import {Message} from "../models/message";
 import {DatePipe, NgClass, NgForOf, NgStyle} from "@angular/common";
 import {User} from "../models/user";
 import {FormsModule} from "@angular/forms";
@@ -11,36 +11,39 @@ import {NotificationService} from "../notification.service";
 import {MatButton} from "@angular/material/button";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
+import {ChatStorageService} from "../chat-storage.service";
+
 
 @Component({
   selector: 'app-chat',
+  templateUrl: './chat.component.html',
   standalone: true,
   imports: [
-    NgClass,
-    NgForOf,
-    DatePipe,
-    FormsModule,
     NgStyle,
-    UserComponent,
-    MatButton,
-    MatLabel,
+    DatePipe,
     MatFormField,
-    MatInput
+    MatLabel,
+    FormsModule,
+    MatInput,
+    MatButton,
+    UserComponent,
+    NgForOf,
+    NgClass
   ],
-  templateUrl: './chat.component.html',
-  styleUrl: './chat.component.css'
+  styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit {
   private chatId: number;
   private chatSession?: ChatSession;
   protected user?: User;
   protected newMessageContent: string = '';
-  @ViewChild('chatContainer') private chatContainer!: ElementRef;
+  @ViewChild('chatContainer') private chatContainerRef: ElementRef | undefined;
 
   constructor(
-    private route: ActivatedRoute,
     private chatService: ChatService,
     private notificationService: NotificationService,
+    private chatStorageService: ChatStorageService,
+    private router: Router
   ) {
     this.chatId = 0;
   }
@@ -49,49 +52,58 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.getChat();
   }
 
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
-
   private getChat(): void {
-    this.chatId = Number(this.route.snapshot.paramMap.get('id'));
-    this.chatService.getChat(this.chatId)
-      .subscribe((chat: ChatSession) => {
-        this.chatSession = chat
-        this.user = chat.user;
-      });
+    this.chatId = this.chatStorageService.getId();
+    if (this.chatId !== 0) {
+      this.chatService.getChat(this.chatId)
+        .subscribe(
+          (chat: ChatSession) => {
+            this.chatSession = chat;
+            this.user = chat.user;
+          }
+        );
+    } else {
+      this.router.navigateByUrl('/chat-not-found');
+    }
   }
 
   sendMessage(): void {
     if (this.newMessageContent.trim()) {
-      const userMessage = this.getUserMessage()
+      const userMessage = this.getUserMessage();
       this.chatService.sendMessage(this.chatId, userMessage)
         .subscribe(
-          (botResponse: BotMessage) => this.processBotResponse(botResponse)
+          (botResponse: Message) => this.processBotResponse(botResponse)
         );
     } else {
       this.notificationService.showError("Messages has to have a content", "Sending message failed");
     }
   }
 
-  private getUserMessage(): UserMessage {
-    const userMessage: UserMessage = this.createUserMessage()
+  private getUserMessage(): Message {
+    const userMessage: Message = this.createUserMessage();
     this.chatSession?.messages.push(userMessage);
     this.newMessageContent = '';
+    setTimeout(() => {
+      this.scrollToBottom();
+    });
     return userMessage;
   }
 
-  private createUserMessage(): UserMessage {
+  private createUserMessage(): Message {
     return {
       time_sent: new Date(),
       content: this.newMessageContent.trim(),
-      user: this.chatSession?.user
-    } as UserMessage;
+      sender: this.chatSession?.user.name,
+      is_bot_message: false
+    } as Message;
   }
 
-  private processBotResponse(response: BotMessage) {
+  private processBotResponse(response: Message) {
     if (response) {
       this.chatSession?.messages.push(response);
+      setTimeout(() => {
+        this.scrollToBottom();
+      });
     } else {
       this.notificationService.showError("No answer from the bot.", "Server Error");
     }
@@ -105,13 +117,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  isUserMessage(message: Message): boolean {
-    return 'user' in message;
+  isBotMessage(message: Message): boolean {
+    return message.is_bot_message;
   }
 
-  private scrollToBottom() {
+  private scrollToBottom(): void {
     try {
-      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
-    } catch (err) { }
+      if (this.chatContainerRef) {
+        this.chatContainerRef.nativeElement.scrollTop = this.chatContainerRef.nativeElement.scrollHeight;
+      }
+    } catch (err) {
+    }
   }
 }
