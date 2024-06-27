@@ -2,29 +2,32 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {User} from "../models/user";
 import {UserService} from "../user.service";
 import {interval, Subscription, switchMap} from 'rxjs';
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
+import {ChatStorageService} from "../chat-storage.service";
 
 @Component({
   selector: 'app-user',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
 export class UserComponent implements OnInit, OnDestroy {
   private usersSubscription: Subscription | undefined;
-  loggedInUsers: User[] = [];
+  private loggedInUsers: User[] = [];
 
   constructor(
     private userService: UserService,
+    private chatStorageService: ChatStorageService,
   ) {
   }
 
   ngOnInit() {
     this.subscribeToUsers();
-    this.getUsers();
+    this.getUsersFromBackend();
   }
 
   ngOnDestroy(): void {
@@ -39,15 +42,38 @@ export class UserComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getUsers() {
+  private getUsersFromBackend() {
     this.userService.getLoggedInUsers().subscribe(
-      (users: User[]) => this.loggedInUsers = users
+      (users: User[]) => {
+        this.loggedInUsers = users
+      }
     );
+  }
+
+  getUsers(): User[] {
+    this.removeUserFromUsers()
+    return this.loggedInUsers;
+  }
+
+  private removeUserFromUsers() {
+    const userName = this.chatStorageService.getUserName();
+    if (userName) {
+      for (let i = 0; i < this.loggedInUsers.length; i++) {
+        if (this.loggedInUsers[i].name === userName) {
+          this.loggedInUsers.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 
   private unsubscribeToUsers(): void {
     if (this.usersSubscription) {
       this.usersSubscription.unsubscribe();
     }
+  }
+
+  getUserName(): string {
+    return this.chatStorageService.getUserName()
   }
 }
