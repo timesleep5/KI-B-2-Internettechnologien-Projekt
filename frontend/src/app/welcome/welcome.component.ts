@@ -3,12 +3,21 @@ import {Router, RouterLink} from "@angular/router";
 import {ChatService} from "../chat.service";
 import {NgIf} from "@angular/common";
 import {NotificationService} from "../notification.service";
-import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {
+  MatCard,
+  MatCardContent,
+  MatCardFooter,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle
+} from "@angular/material/card";
 import {MatError, MatFormField, MatHint, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {ChatStorageService} from "../chat-storage.service";
+import {MatTextColumn} from "@angular/material/table";
 
 
 @Component({
@@ -30,7 +39,9 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
     MatError,
     MatCardFooter,
     MatHint,
-    MatIconButton
+    MatIconButton,
+    MatTextColumn,
+    MatCardSubtitle
   ],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css'
@@ -42,6 +53,7 @@ export class WelcomeComponent {
   constructor(
     private chatService: ChatService,
     private notificationService: NotificationService,
+    private chatStorageService: ChatStorageService,
     private router: Router
   ) {
   }
@@ -53,7 +65,9 @@ export class WelcomeComponent {
         .subscribe((chatId: number) => {
             this.loading = false;
             this.currentChatId = chatId;
-            this.router.navigateByUrl(`/chat/${this.currentChatId}`);
+            this.chatStorageService.setId(chatId)
+            this.chatStorageService.setUserName(name)
+            this.router.navigateByUrl(`/chat`);
           }
         );
     } else {

@@ -1,4 +1,4 @@
-<div class="welcome-container">
+<div class="main-container">
   <mat-card>
     <mat-card-header>
       <div mat-card-avatar class="welcome-logo"></div>
@@ -7,6 +7,14 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <h3>
+        If you have a leasing contract for a BMW, BMW Motorcycle or a MINI at BMW's leasing service JAWA,
+        then this chatbot might be for you!
+        If you give it some data about your contract, it will calculate the rest for you and give you a summary
+        on your current state within the contract!
+        Since in JAWA contracts, there is a kilometer limit, a special focus lies on mileage.
+        Our bot will give you an overview over your average daily 'consumption' of kilometers and how good or bad you are doing with respect to the runtime of your contract.
+      </h3>
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Enter your username</mat-label>
         <input matInput #nameInput id="name" (keyup.enter)="createChatSessionFromName(nameInput.value)">
