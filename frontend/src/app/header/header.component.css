@@ -4,23 +4,28 @@
   left: 0;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
   padding: 20px 40px;
   background-color: #1e1e1e;
   color: #ffffff;
   z-index: 1000; /* Ensure header is above other content */
 }
 
-.app-header .logo {
+.logo {
+  margin: 10px 0;
   font-size: 2em;
   font-weight: bold;
+}
+
+.logo img {
+  max-height: 5vh;
 }
 
 nav {
   display: flex;
   gap: 20px;
-  margin-left: 0;
+  margin-left: 2vw;
 }
 
 nav a {
