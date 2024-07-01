@@ -8,6 +8,7 @@ from datastructures.ChatModels import Message, User
 from datastructures.States import State, get_state
 from datastructures.SummaryData import SummaryData
 from utils.Exceptions import NoKeywordFoundException, NoMatchingStateException
+from utils.format_utils import is_valid_startdate, is_strictly_positive_integer, is_positive_integer
 from utils.fs_utils import read_json, Paths, saved_summary_ids, \
     save_json, read_summary_with_id
 from utils.regex_utils import find_number, find_date, find_summary_id
@@ -30,6 +31,7 @@ class Bot:
         __loaded_summary_id (int): ID of the currently loaded summary.
         __saved_summary_id (int): ID of the saved summary.
         __summary_builder (SummaryBuilder): Instance to build summary reports.
+        __current_message (str): The content of the currently built message.
     """
 
     def __init__(self):
@@ -64,6 +66,8 @@ class Bot:
         self.__saved_summary_id: int
         self.__summary_builder: SummaryBuilder
 
+        self.__current_message: str
+
         self.__load_jsons()
         self.__update_saved_summaries()
 
@@ -81,32 +85,28 @@ class Bot:
         """
         Generates a random greeting message.
 
-        Returns:
-            Message: Bot message containing the greeting.
+        :return: Bot message containing the greeting.
         """
-        message = random.choice(self.__greetings)
-        return self.__build_response(message)
+        self.__current_message = random.choice(self.__greetings)
+        return self.__build_response()
 
     def get_start_message(self) -> Message:
         """
         Generates the initial message when starting the conversation.
 
-        Returns:
-            Message: Bot message containing the start message.
+        :return: Bot message containing the start message.
         """
-        message = self.__random_question_of_current_state()
-        return self.__build_response(message)
+        self.__current_message = self.__random_question_of_current_state()
+        return self.__build_response()
 
     def respond_to(self, message: Message) -> Message:
         """
         Responds to the user message based on the current state.
 
-        Args:
-            message (Message): User message containing the user input.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param message: User message containing the user input.
+        :return: Bot message containing the response to the user input.
         """
+        self.__current_message = ''
         content = message.content.lower()
         match self.__state:
             case State.START:
@@ -161,11 +161,8 @@ class Bot:
         """
         Handles user input during the START state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         self.__update_saved_summaries()
         new_state_string = ''
@@ -185,11 +182,8 @@ class Bot:
         """
         Handles user input during the RESTART state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         new_state_string = ''
         try:
@@ -209,8 +203,7 @@ class Bot:
         """
         Handles user input during the HELP state.
 
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :return: Bot message containing the response to the user input.
         """
         return self.__switch_to_previous_and_respond()
 
@@ -218,11 +211,8 @@ class Bot:
         """
         Handles user input during the LOAD_SUMMARY state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         return self.__response_without_functionality(content)
 
@@ -230,11 +220,8 @@ class Bot:
         """
         Handles user input during the SUMMARY_OVERVIEW state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             self.__loaded_summary_id = find_summary_id(content)
@@ -246,11 +233,8 @@ class Bot:
         """
         Handles user input during the SHOW_LOADED_SUMMARY state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         return self.__response_without_functionality(content)
 
@@ -258,15 +242,18 @@ class Bot:
         """
         Handles user input during the INPUT_STARTDATE state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             startdate = find_date(content)
+            if not is_valid_startdate(startdate):
+                self.__current_message += ('You have to enter a startdate that lies at least one day in the past.\n'
+                                           'The summary only works for contracts that are already running.\n'
+                                           f'{self.__random_question_of_current_state()}')
+                return self.__build_response()
             self.__summary_data.set_start_date(startdate)
+            self.__add_saved_startdate_to_message()
             if self.__previous_state == State.CHANGES:
                 return self.__switch_state_and_respond(self.__previous_state)
             return self.__switch_state_and_respond(State.INPUT_MONTHS)
@@ -277,68 +264,74 @@ class Bot:
         """
         Handles user input during the INPUT_MONTHS state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             months = find_number(content)
+            if not is_strictly_positive_integer(months):
+                self.__current_message += ('You must enter a strictly positive number as a runtime of months.\n'
+                                           'That means, the number must be greater than zero.\n'
+                                           f'{self.__random_question_of_current_state()}')
+                return self.__build_response()
             self.__summary_data.set_months(months)
+            self.__add_saved_months_to_message()
             if self.__previous_state == State.CHANGES:
                 return self.__switch_state_and_respond(self.__previous_state)
             return self.__switch_state_and_respond(State.INPUT_KM_LIMIT)
         except ValueError:
-            self.__response_without_functionality(content)
+            return self.__response_without_functionality(content)
 
     def __handle_input_km_limit(self, content: str) -> Message:
         """
         Handles user input during the INPUT_KM_LIMIT state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             km_limit = find_number(content)
+            if not is_strictly_positive_integer(km_limit):
+                self.__current_message += ('You must enter a strictly positive number as a kilometer limit.\n'
+                                           'That means, the number must be greater than zero.\n'
+                                           f'{self.__random_question_of_current_state()}')
+                return self.__build_response()
             self.__summary_data.set_km_limit(km_limit)
+            self.__add_saved_km_limit_to_message()
             if self.__previous_state == State.CHANGES:
                 return self.__switch_state_and_respond(self.__previous_state)
             return self.__switch_state_and_respond(State.INPUT_KM_DRIVEN)
         except ValueError:
-            self.__response_without_functionality(content)
+            return self.__response_without_functionality(content)
 
     def __handle_input_km_driven(self, content: str) -> Message:
         """
         Handles user input during the INPUT_KM_DRIVEN state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             km_driven = find_number(content)
+            if not is_positive_integer(km_driven):
+                self.__current_message += ('You must enter a positive number as a runtime of months.\n'
+                                           'That means, the number must be greater than or equal to zero.\n'
+                                           f'{self.__random_question_of_current_state()}')
+                return self.__build_response()
             self.__summary_data.set_km_driven(km_driven)
+            self.__add_saved_km_driven_to_message()
             if self.__previous_state == State.CHANGES:
                 return self.__switch_state_and_respond(self.__previous_state)
             return self.__switch_state_and_respond(State.ASK_FOR_CHANGES)
         except ValueError:
-            self.__response_without_functionality(content)
+            return self.__response_without_functionality(content)
 
     def __handle_ask_for_changes(self, content: str) -> Message:
         """
         Handles user input during the ASK_FOR_CHANGES state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         return self.__response_without_functionality(content)
 
@@ -346,11 +339,8 @@ class Bot:
         """
         Handles user input during the CHANGES state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         return self.__response_without_functionality(content)
 
@@ -358,11 +348,8 @@ class Bot:
         """
         Handles user input during the SHOW_SUMMARY state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         try:
             new_state_string = self.__spot_keywords_for_new_state(content)
@@ -372,15 +359,14 @@ class Bot:
             return self.__switch_state_and_respond(new_state)
         except IOError:
             self.__switch_state(State.SHOW_SUMMARY)
-            error_message = 'Your summary could not be saved. I apologise for your trouble, do you want to try again?'
-            return self.__build_response(error_message)
+            self.__current_message = 'Your summary could not be saved. I apologise for your trouble, do you want to try again?'
+            return self.__build_response()
 
     def __handle_save_summary(self) -> Message:
         """
         Handles user input during the SAVE_SUMMARY state.
 
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :return: Bot message containing the response to the user input.
         """
         return self.__switch_state_and_respond(State.RESTART)
 
@@ -388,11 +374,8 @@ class Bot:
         """
         Handles user input during the EXIT state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         return self.__response_without_functionality(content)
 
@@ -400,21 +383,17 @@ class Bot:
         """
         Handles user input during an unknown state.
 
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :return: Bot message containing the response to the user input.
         """
-        error_message = 'Something has gone wrong. I apologize for your trouble. Please restart the chat.'
-        return self.__build_response(error_message)
+        self.__current_message = 'Something has gone wrong. I apologize for your trouble. Please restart the chat.'
+        return self.__build_response()
 
     def __response_without_functionality(self, content: str) -> Message:
         """
         Handles user input with no specific functionality in the current state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  content: User input message content.
+        :return: Bot message containing the response to the user input.
         """
         new_state_string = ''
         try:
@@ -431,14 +410,9 @@ class Bot:
         """
         Identifies keywords in user input to transition to a new state.
 
-        Args:
-            content (str): User input message content.
-
-        Returns:
-            str: Keyword identified for state transition.
-
-        Raises:
-            NoKeywordFoundException: If no keyword is found in the user input.
+        :param  content: User input message content.
+        :return: Keyword identified for state transition.
+        :raise NoKeywordFoundException: If no keyword is found in the user input.
         """
         current_transitions: Dict[str, str] = self.__transitions[self.__state.value]
         current_keywords = current_transitions.keys()
@@ -451,33 +425,28 @@ class Bot:
         """
         Switches to a new state and responds with a message.
 
-        Args:
-            state (State): New state to switch to.
-
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :param  state (State): New state to switch to.
+        :return: Bot message containing the response to the user input.
         """
         self.__switch_state(state)
-        content = self.__random_question_of_current_state()
-        return self.__build_response(content)
+        self.__current_message += self.__random_question_of_current_state()
+        if self.__additional_info_necessary():
+            self.__add_info()
+        return self.__build_response()
 
     def __switch_to_previous_and_respond(self) -> Message:
         """
         Switches back to the previous state and responds with a message.
 
-        Returns:
-            Message: Bot message containing the response to the user input.
+        :return: Bot message containing the response to the user input.
         """
-        self.__switch_state(self.__previous_state)
-        content = self.__random_question_of_current_state()
-        return self.__build_response(content)
+        return self.__switch_state_and_respond(self.__previous_state)
 
     def __switch_state(self, state: State) -> None:
         """
         Switches to a new state.
 
-        Args:
-            state (State): New state to switch to.
+        :param  state: New state to switch to.
         """
         self.__previous_state = self.__state
         self.__state = state
@@ -486,8 +455,7 @@ class Bot:
         """
         Selects a random question based on the current state.
 
-        Returns:
-            str: Randomly selected question.
+        :return: Randomly selected question.
         """
         state_value = self.__state.value
         questions = self.__questions[state_value]
@@ -497,14 +465,13 @@ class Bot:
         """
         Generates a random fallback response.
 
-        Returns:
-            Message: Bot message containing the fallback response.
+        :return: Bot message containing the fallback response.
         """
-        fallback = self.__random_fallback()
+        self.__current_message += self.__random_fallback()
         return Message(
             time_sent=datetime.now(),
             sender='bot',
-            content=fallback,
+            content=self.__current_message,
             is_bot_message=True
         )
 
@@ -512,8 +479,7 @@ class Bot:
         """
         Selects a random fallback message.
 
-        Returns:
-            str: Randomly selected fallback message.
+        :return: Randomly selected fallback message.
         """
         return random.choice(self.__fallbacks)
 
@@ -527,28 +493,21 @@ class Bot:
         """
         Saves the current summary data and returns the ID of the saved summary.
 
-        Returns:
-            int: ID of the saved summary.
+        :return: ID of the saved summary.
         """
         summary_data = self.__summary_builder.get_summary_data()
         return save_json(summary_data)
 
-    def __build_response(self, content: str) -> Message:
+    def __build_response(self) -> Message:
         """
         Builds a bot message response.
 
-        Args:
-            content (str): Content of the response message.
-
-        Returns:
-            Message: Bot message containing the response.
+        :return: Bot message containing the response.
         """
-        if self.__additional_info_necessary():
-            content = self.__add_info(content)
         return Message(
             time_sent=datetime.now(),
             sender='bot',
-            content=content,
+            content=self.__current_message,
             is_bot_message=True
         )
 
@@ -556,140 +515,126 @@ class Bot:
         """
         Checks if additional information is necessary based on the current and previous states.
 
-        Returns:
-            bool: True if additional information is necessary, False otherwise.
+        :return: True if additional information is necessary, False otherwise.
         """
-        return (self.__state in self.__needs_additional_info
-                or self.__previous_state.value.lower().startswith('input'))
+        return self.__state in self.__needs_additional_info
 
-    def __add_info(self, content: str) -> str:
+    def __add_info(self) -> None:
         """
         Adds additional information to the response based on the current state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with additional information added.
         """
         match self.__state:
             case State.SUMMARY_OVERVIEW:
-                return self.__add_summary_overview(content)
+                self.__add_summary_overview()
             case State.SHOW_LOADED_SUMMARY:
-                return self.__add_loaded_summary(content)
+                self.__add_loaded_summary()
             case State.ASK_FOR_CHANGES:
-                return self.__add_entered_data(content)
+                self.__add_entered_data()
             case State.SHOW_SUMMARY:
-                return self.__add_summary(content)
+                self.__add_summary()
             case State.SAVE_SUMMARY:
-                return self.__add_saved_summary_id(content)
+                self.__add_saved_summary_id()
             case _:
-                return self.__add_info_for_saved_data(content)
+                self.__logger.critical(f'state should not require additional info: {self.__state}')
 
-    def __add_info_for_saved_data(self, content: str) -> str:
-        """
-        Adds additional information to the response based on the previous state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with additional information added.
-        """
-        additional_info = ''
-        match self.__previous_state:
-            case State.INPUT_STARTDATE:
-                additional_info = self.__summary_data.get_start_date().strftime("%d.%m.%Y")
-            case State.INPUT_MONTHS:
-                additional_info = f'{self.__summary_data.get_months()} months'
-            case State.INPUT_KM_LIMIT:
-                additional_info = f'{self.__summary_data.get_km_limit()} km'
-            case State.INPUT_KM_DRIVEN:
-                additional_info = f'{self.__summary_data.get_km_driven()} km'
-        if additional_info:
-            return f'I saved: {additional_info}.\n{content}'
-        else:
-            return content
-
-    def __add_summary_overview(self, content: str) -> str:
+    def __add_summary_overview(self) -> None:
         """
         Adds additional information to the response for the SUMMARY_OVERVIEW state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with additional information added.
         """
         self.__update_saved_summaries()
         if self.__saved_summaries:
             formatted_numbers = ', '.join(str(num) for num in sorted(self.__saved_summaries))
-            return f'{content}\n{formatted_numbers}\nPlease choose one.'
+            self.__current_message += f'\n{formatted_numbers}\nPlease choose one.'
         else:
             self.__switch_state(State.START)
-            return 'Unfortunately, there are no saved summaries. Do you wanna start over?'
+            self.__current_message = 'Unfortunately, there are no saved summaries. Do you wanna start over?'
 
-    def __add_loaded_summary(self, content: str) -> str:
+    def __add_loaded_summary(self) -> None:
         """
         Adds additional information to the response for the SHOW_LOADED_SUMMARY state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with additional information added.
         """
         self.__update_saved_summaries()
         if self.__loaded_summary_id in self.__saved_summaries:
             summary_data = read_summary_with_id(self.__loaded_summary_id)
             summary = SummaryBuilder.get_summary_from_data(summary_data)
-            return f'{content}\n\n{summary}\n\nDo you want to load another summary?'
+            self.__current_message += f'\n\n{summary}\n\nDo you want to load another summary?'
         else:
             self.__switch_state(State.SUMMARY_OVERVIEW)
-            return 'This id is invalid. Please provide a different id.'
+            self.__current_message = 'This id is invalid. Please provide a different id.'
 
-    def __add_entered_data(self, content: str) -> str:
+    def __add_entered_data(self) -> None:
         """
         Adds entered data information to the response for the ASK_FOR_CHANGES state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with entered data information added.
         """
         entered_data = str(self.__summary_data)
-        return f'{content}\n\n{entered_data}'
+        self.__current_message += f'\n\n{entered_data}\n\nDo you need to modify any details in your contract?'
 
-    def __add_summary(self, content: str) -> str:
+    def __add_summary(self) -> None:
         """
         Adds summary information to the response for the SHOW_SUMMARY state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with summary information added.
         """
         if self.__summary_data.is_complete():
             self.__build_summary_builder()
             summary = self.__summary_builder.get_summary()
-            return f'{content}\n\n{summary}\n\nDo you want to save your summary?'
+            self.__current_message += f'\n\n{summary}\n\nDo you want to save your summary?'
         else:
             self.__switch_state(State.ASK_FOR_CHANGES)
-            return f'Summary cannot be built because some values are missing. Do you want to enter the missing values?'
+            self.__current_message = ('Summary cannot be built because some values are missing. '
+                                      'Do you want to enter the missing values?')
 
-    def __add_saved_summary_id(self, content: str) -> str:
+    def __add_saved_summary_id(self) -> None:
         """
         Adds saved summary ID information to the response for the SAVE_SUMMARY state.
-
-        Args:
-            content (str): Current content of the response message.
-
-        Returns:
-            str: Content of the response message with saved summary ID information added.
         """
-        return f'{content} {self.__saved_summary_id}'
+        self.__current_message += f' {self.__saved_summary_id}'
+
+    def __add_saved_startdate_to_message(self) -> None:
+        """
+        Adds the saved start date information to the current message.
+
+        The start date is formatted as "dd.mm.yyyy" and appended to the current message.
+        """
+        additional_info = self.__summary_data.get_start_date().strftime("%d.%m.%Y")
+        self.__add_saved_data_message(additional_info)
+
+    def __add_saved_months_to_message(self) -> None:
+        """
+        Adds the saved number of months information to the current message.
+
+        The number of months is appended to the current message, with proper pluralization.
+        """
+        number_of_months = self.__summary_data.get_months()
+        additional_info = f'{number_of_months} month{"s" if number_of_months != 1 else ""}'
+        self.__add_saved_data_message(additional_info)
+
+    def __add_saved_km_limit_to_message(self) -> None:
+        """
+        Adds the saved kilometer limit information to the current message.
+
+        The kilometer limit is appended to the current message.
+        """
+        additional_info = f'{self.__summary_data.get_km_limit()} km'
+        self.__add_saved_data_message(additional_info)
+
+    def __add_saved_km_driven_to_message(self) -> None:
+        """
+        Adds the saved kilometers driven information to the current message.
+
+        The kilometers driven is appended to the current message.
+        """
+        additional_info = f'{self.__summary_data.get_km_driven()} km'
+        self.__add_saved_data_message(additional_info)
+
+    def __add_saved_data_message(self, saved_data: str) -> None:
+        """
+        Appends saved data information to the current message.
+
+        The saved data is prefixed with "I saved: " and appended to the current message.
+
+        :param saved_data: The data to append to the current message.
+        """
+        new_message = f'I saved: {saved_data}.\n{self.__current_message}'
+        self.__current_message = new_message
 
     def __build_summary_builder(self) -> None:
         """
