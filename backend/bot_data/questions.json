@@ -29,9 +29,9 @@
     "Review the loaded summary below. Note that you cannot modify any details."
   ],
   "input_startdate": [
-    "Please provide the start date of the leasing contract in the format DD-MM-YYYY.",
-    "Enter the start date for the contract (DD-MM-YYYY).",
-    "What is the start date of the contract? Use the format DD-MM-YYYY."
+    "Please provide the start date of the leasing contract in the format 'DD.MM.YYYY'.",
+    "Enter the start date for the contract (DD.MM.YYYY).",
+    "What is the start date of the contract? Use the format 'DD.MM.YYYY'."
   ],
   "input_months": [
     "How many months will the contract last? Please enter an integer.",
@@ -49,9 +49,9 @@
     "Provide the total kilometers you have driven under the contract."
   ],
   "ask_for_changes": [
-    "Would you like to make any changes to your leasing contract? Here is the entered data:",
-    "Do you need to modify any details in your contract? Review your data here:",
-    "Please confirm if you need to make any adjustments. Your current data:"
+    "Here is the entered data:",
+    "Review your data here:",
+    "Your current data:"
   ],
   "changes": [
     "What changes would you like to make to your leasing contract? Options: start date, months, kilometer limit, driven kilometers.",

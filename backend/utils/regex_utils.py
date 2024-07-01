@@ -38,12 +38,12 @@ def find_date(content: str) -> datetime:
     Raises:
         ValueError: If no valid date is found.
     """
-    pattern = re.compile(r'\b\d{2}-\d{2}-\d{4}\b')  # Matches dates in DD-MM-YYYY format
+    pattern = re.compile(r'\b\d{2}.\d{2}.\d{4}\b')  # Matches dates in DD-MM-YYYY format
     matches = pattern.findall(content)  # Find all matches in content
 
     for match in matches:
         try:
-            date = datetime.strptime(match, '%d-%m-%Y')  # Parse match into datetime object
+            date = datetime.strptime(match, '%d.%m.%Y')  # Parse match into datetime object
             return date
         except ValueError:
             continue  # Continue to next match if parsing fails
