@@ -120,5 +120,5 @@ class SummaryData:
             f"  start date: {start_date_str},\n"
             f"  months: {self.__data['months']},\n"
             f"  km limit: {self.__data['km_limit']},\n"
-            f"  km driven: {self.__data['km_driven']}\n"
+            f"  km driven: {self.__data['km_driven']}"
         )
