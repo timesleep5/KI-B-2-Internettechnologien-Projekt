@@ -1,3 +1,4 @@
+import logging
 import random
 from datetime import datetime
 from typing import List, Dict
@@ -17,6 +18,7 @@ class Bot:
     Represents a chatbot that interacts with users to manage leasing summaries.
 
     Attributes:
+        __logger (Logger): Logs critical errors.
         __summary_data (SummaryData): Instance to manage summary-related data.
         __state (State): Current state of the chatbot.
         __previous_state (State): Previous state of the chatbot.
@@ -35,6 +37,10 @@ class Bot:
         Initializes a Bot instance, setting up initial states, loading JSON data,
         and preparing necessary attributes.
         """
+        logging.basicConfig(filename='logs/bot.log')
+        self.__logger = logging.getLogger(__name__)
+        self.__logger.setLevel(logging.INFO)
+
         self.__summary_data = SummaryData()
 
         self.__state: State = State.START
@@ -162,6 +168,7 @@ class Bot:
             Message: Bot message containing the response to the user input.
         """
         self.__update_saved_summaries()
+        new_state_string = ''
         try:
             new_state_string = self.__spot_keywords_for_new_state(content)
             new_state = get_state(new_state_string)
@@ -171,7 +178,7 @@ class Bot:
         except NoKeywordFoundException:
             return self.__random_fallback_response()
         except NoMatchingStateException:
-            # TODO log
+            self.__logger.critical(f'Unknown state: {new_state_string}')
             return self.__random_fallback_response()
 
     def __handle_restart(self, content: str) -> Message:
@@ -184,6 +191,7 @@ class Bot:
         Returns:
             Message: Bot message containing the response to the user input.
         """
+        new_state_string = ''
         try:
             new_state_string = self.__spot_keywords_for_new_state(content)
             if new_state_string == 'previous':
@@ -194,7 +202,7 @@ class Bot:
         except NoKeywordFoundException:
             return self.__random_fallback_response()
         except NoMatchingStateException:
-            # TODO log
+            self.__logger.critical(f'Unknown state: {new_state_string}')
             return self.__random_fallback_response()
 
     def __handle_help(self) -> Message:
@@ -408,6 +416,7 @@ class Bot:
         Returns:
             Message: Bot message containing the response to the user input.
         """
+        new_state_string = ''
         try:
             new_state_string = self.__spot_keywords_for_new_state(content)
             new_state = get_state(new_state_string)
@@ -415,7 +424,7 @@ class Bot:
         except NoKeywordFoundException:
             return self.__random_fallback_response()
         except NoMatchingStateException:
-            # TODO log
+            self.__logger.critical(f'Unknown state: {new_state_string}')
             return self.__random_fallback_response()
 
     def __spot_keywords_for_new_state(self, content: str) -> str:
