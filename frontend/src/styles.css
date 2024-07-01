@@ -68,7 +68,9 @@
 body {
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
-  background-color: var(--background-color);
+  background-image: url('/assets/bmw-dark.jpg');
+  background-repeat: repeat-y;
+  background-size: cover;
   color: var(--text-color);
   margin: 0;
   padding: 0;
@@ -108,12 +110,31 @@ input {
   border-radius: 5px;
   margin-bottom: 20px;
   width: 50vw;
+  opacity: 90%;
+}
+
+.mat-raised-button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.mat-raised-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.mat-input-element {
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border-color);
+  color: var(--text-color);
+}
+
+.mat-input-element:focus {
+  border-color: var(--primary-color);
 }
 
 .main-container {
   display: flex;
   justify-content: center;
-  padding: 1vh;
   height: 85vh;
 }
 
