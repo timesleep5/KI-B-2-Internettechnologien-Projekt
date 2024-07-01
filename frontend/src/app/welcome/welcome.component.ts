@@ -5,6 +5,7 @@ import {NgIf} from "@angular/common";
 import {NotificationService} from "../notification.service";
 import {
   MatCard,
+  MatCardAvatar,
   MatCardContent,
   MatCardFooter,
   MatCardHeader,
@@ -41,7 +42,8 @@ import {MatTextColumn} from "@angular/material/table";
     MatHint,
     MatIconButton,
     MatTextColumn,
-    MatCardSubtitle
+    MatCardSubtitle,
+    MatCardAvatar
   ],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css'

@@ -1,5 +1,5 @@
 <div class="main-container">
-  <mat-card>
+  <div class="mat-card introduction-card">
     <mat-card-header>
       <div mat-card-avatar class="welcome-logo"></div>
       <mat-card-title>
@@ -13,19 +13,23 @@
         If you give it some data about your contract, it will calculate the rest for you and give you a summary
         on your current state within the contract!
         Since in JAWA contracts, there is a kilometer limit, a special focus lies on mileage.
-        Our bot will give you an overview over your average daily 'consumption' of kilometers and how good or bad you are doing with respect to the runtime of your contract.
+        Our bot will give you an overview over your average daily 'consumption' of kilometers and how good or bad you
+        are doing with respect to the runtime of your contract.
       </h3>
-      <mat-form-field appearance="fill" class="full-width">
+    </mat-card-content>
+  </div>
+
+  <div class="mat-card username-card">
+    <form class="username-input">
+      <mat-form-field appearance="fill" class="username-input-field">
         <mat-label>Enter your username</mat-label>
         <input matInput #nameInput id="name" (keyup.enter)="createChatSessionFromName(nameInput.value)">
-        <mat-icon matSuffix>person</mat-icon>
-        <mat-hint>Press Enter or click "Create User" to proceed</mat-hint>
       </mat-form-field>
       <button mat-raised-button color="primary" (click)="createChatSessionFromName(nameInput.value)"
-              [disabled]="loading">
+              [disabled]="loading" class="load-button">
         <mat-progress-spinner *ngIf="loading" [diameter]="24" mode="indeterminate"></mat-progress-spinner>
         <span *ngIf="!loading">Create User</span>
       </button>
-    </mat-card-content>
-  </mat-card>
+    </form>
+  </div>
 </div>

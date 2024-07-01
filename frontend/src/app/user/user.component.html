@@ -1,4 +1,4 @@
-<div class="users-container">
+<div class="mat-card">
   <h3>Currently Logged-in Users</h3>
   <div *ngIf="getUserName()" class="user-self"><strong>{{ getUserName() }} (You)</strong></div>
   <div *ngFor="let user of getUsers()" class="user-list">

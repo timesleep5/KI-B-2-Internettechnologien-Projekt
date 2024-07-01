@@ -1,48 +1,40 @@
 .main-container {
+  flex-direction: column;
+  align-items: center;
   height: auto;
 }
 
-mat-card {
-  background-color: var(--card-background);
-  color: var(--text-color);
-  width: 100%;
-  max-width: 400px;
-  padding: 16px;
+.introduction-card {
+  width: 50vw;
 }
 
-.full-width {
-  width: 100%;
+.username-card {
+  width: auto;
 }
 
-.mat-input-element {
-  background-color: var(--input-background);
-  border: 1px solid var(--input-border-color);
-  color: var(--text-color);
+.username-input {
+  padding-top: 10px;
+  width: 30vw;
+  display: flex;
+  max-width: 100%;
 }
 
-.mat-input-element:focus {
-  border-color: var(--primary-color);
-}
-
-mat-button {
-  margin-top: 16px;
-}
-
-.mat-raised-button {
-  background-color: var(--primary-color);
+.username-input-field {
+  flex-grow: 1;
+  margin-right: 10px;
   color: var(--text-color);
 }
 
-.mat-raised-button:hover {
-  background-color: var(--primary-color-dark);
+.load-button {
+  min-width: 100px;
+  background-color: var(--button-bg);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .mat-progress-spinner {
   vertical-align: middle;
 }
-
-mat-error {
-  color: var(--error-color);
-  margin-top: 8px;
-}
-
