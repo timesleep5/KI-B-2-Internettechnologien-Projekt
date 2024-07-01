@@ -9,6 +9,8 @@
     "nah": "start",
     "nope": "start",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "restart": {
@@ -23,10 +25,14 @@
     "abort": "previous",
     "cancel": "previous",
     "back": "previous",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "help": {
-    "restart": "restart"
+    "restart": "restart",
+    "exit": "exit",
+    "bye": "exit"
   },
   "load_summary": {
     "yes": "summary_overview",
@@ -37,6 +43,8 @@
     "not now": "input_startdate",
     "later": "input_startdate",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "summary_overview": {
@@ -49,6 +57,8 @@
     "nah": "restart",
     "nope": "restart",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "show_loaded_summary": {
@@ -61,22 +71,32 @@
     "nah": "restart",
     "nope": "restart",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "input_startdate": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "input_months": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "input_km_limit": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "input_km_driven": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "ask_for_changes": {
@@ -90,6 +110,8 @@
     "nah": "show_summary",
     "nope": "show_summary",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "changes": {
@@ -107,6 +129,8 @@
     "nope": "show_summary",
     "nothing": "show_summary",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "show_summary": {
@@ -119,14 +143,20 @@
     "nah": "restart",
     "nope": "restart",
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "save_summary": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   },
   "exit": {
     "restart": "restart",
+    "exit": "exit",
+    "bye": "exit",
     "help": "help"
   }
 }
