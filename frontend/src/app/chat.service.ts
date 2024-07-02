@@ -3,8 +3,8 @@ import {catchError, Observable, of} from "rxjs";
 import {ChatSession} from "./models/chat-session";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Message} from "./models/message";
-import {API_BASE_URL} from "./app.config";
 import {NotificationService} from "./notification.service";
+import {ConfigService} from "./config.service";
 
 /*
  * Author: Korbinian Zormeier
@@ -27,15 +27,18 @@ import {NotificationService} from "./notification.service";
   providedIn: 'root'
 })
 export class ChatService {
-  readonly SERVICE_URL: string = `${API_BASE_URL}/chats`;
+  private readonly SERVICE_ROUTE: string = '/chats';
+  private readonly SERVICE_URL: string;
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
 
   constructor(
     private http: HttpClient,
+    private configService: ConfigService,
     private notificationService: NotificationService,
   ) {
+    this.SERVICE_URL = this.configService.getApiHost() + this.SERVICE_ROUTE;
   }
 
   createChatSessionFromName(name: string): Observable<number> {

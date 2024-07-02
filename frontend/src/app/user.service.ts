@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {API_BASE_URL} from "./app.config";
 import {HttpClient} from "@angular/common/http";
 import {catchError, Observable, of} from "rxjs";
 import {User} from "./models/user";
 import {NotificationService} from "./notification.service";
+import {ConfigService} from "./config.service";
 
 /*
  * Author: Korbinian Zormeier
@@ -26,12 +26,15 @@ import {NotificationService} from "./notification.service";
   providedIn: 'root'
 })
 export class UserService {
-  readonly SERVICE_URL: string = `${API_BASE_URL}/users`;
+  private readonly SERVICE_ROUTE: string = '/users';
+  private readonly SERVICE_URL: string;
 
   constructor(
     private http: HttpClient,
+    private configService: ConfigService,
     private notificationService: NotificationService,
   ) {
+    this.SERVICE_URL = this.configService.getApiHost() + this.SERVICE_ROUTE;
   }
 
   getLoggedInUsers(): Observable<User[]> {
