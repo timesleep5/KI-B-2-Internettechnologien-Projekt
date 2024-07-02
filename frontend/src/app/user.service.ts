@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BASE_URL} from "./app.config";
+import {API_BASE_URL} from "./app.config";
 import {HttpClient} from "@angular/common/http";
 import {catchError, Observable, of} from "rxjs";
 import {User} from "./models/user";
@@ -26,7 +26,7 @@ import {NotificationService} from "./notification.service";
   providedIn: 'root'
 })
 export class UserService {
-  readonly SERVICE_URL: string = `${BASE_URL}/users`;
+  readonly SERVICE_URL: string = `${API_BASE_URL}/users`;
 
   constructor(
     private http: HttpClient,

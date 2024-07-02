@@ -6,7 +6,7 @@ import {provideClientHydration} from '@angular/platform-browser';
 import {provideHttpClient} from "@angular/common/http";
 import {provideToastr} from "ngx-toastr";
 import {provideAnimations} from "@angular/platform-browser/animations";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
 /*
  * Author: Korbinian Zormeier
@@ -25,7 +25,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
  * (c) 2024 Technische Hochschule Deggendorf. All rights reserved.
  */
 
-export const BASE_URL = "http://127.0.0.1:8080";
+export const API_PORT: number = 8080;
+export const API_BASE_URL: string = `http://0.0.0.0:${API_PORT}`;
 
 export const appConfig: ApplicationConfig = {
   providers: [

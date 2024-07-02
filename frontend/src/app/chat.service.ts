@@ -3,7 +3,7 @@ import {catchError, Observable, of} from "rxjs";
 import {ChatSession} from "./models/chat-session";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Message} from "./models/message";
-import {BASE_URL} from "./app.config";
+import {API_BASE_URL} from "./app.config";
 import {NotificationService} from "./notification.service";
 
 /*
@@ -27,7 +27,7 @@ import {NotificationService} from "./notification.service";
   providedIn: 'root'
 })
 export class ChatService {
-  readonly SERVICE_URL: string = `${BASE_URL}/chats`;
+  readonly SERVICE_URL: string = `${API_BASE_URL}/chats`;
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }

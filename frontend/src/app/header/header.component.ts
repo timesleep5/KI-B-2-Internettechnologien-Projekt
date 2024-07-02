@@ -1,5 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgOptimizedImage} from "@angular/common";
+import {ConfigService} from "../config.service";
 
 /*
  * Author: Korbinian Zormeier
@@ -27,8 +28,15 @@ import {NgOptimizedImage} from "@angular/common";
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+  apiHost: string = '';
 
-  constructor() {
+  constructor(
+    private configService: ConfigService
+  ) {
+  }
+
+  ngOnInit() {
+    this.apiHost = this.configService.getApiHost();
   }
 }
