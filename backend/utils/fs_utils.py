@@ -20,14 +20,9 @@ def read_summary_with_id(id: int) -> Any:
     """
     Read a summary JSON file given its ID.
 
-    Args:
-        id (int): The ID of the summary to read.
-
-    Returns:
-        Any: The content of the JSON file.
-
-    Raises:
-        FileNotFoundError: If the summary file does not exist.
+    :param id: The ID of the summary to read.
+    :return: The content of the JSON file.
+    :raises FileNotFoundError: If the summary file does not exist.
     """
     summary_name = summary_name_from_id(id)
     summary_path = os.path.join(Paths.SUMMARY_DIR, summary_name)
@@ -38,11 +33,8 @@ def summary_name_from_id(id: int) -> str:
     """
     Generate the summary file name from its ID.
 
-    Args:
-        id (int): The ID of the summary.
-
-    Returns:
-        str: The generated summary file name.
+    :param id: The ID of the summary.
+    :return: The generated summary file name.
     """
     return f'summary_{id:02}.json'
 
@@ -51,11 +43,8 @@ def read_json(path: str) -> Any:
     """
     Read and parse JSON data from a file.
 
-    Args:
-        path (str): The path to the JSON file.
-
-    Returns:
-        Any: The parsed JSON data.
+    :param path: The path to the JSON file.
+    :return: The parsed JSON data.
 
     Raises:
         FileNotFoundError: If the JSON file does not exist.
@@ -68,11 +57,8 @@ def save_json(data: Dict) -> int:
     """
     Save data to a JSON file and return its assigned ID.
 
-    Args:
-        data (Dict): The data to save.
-
-    Returns:
-        int: The ID assigned to the saved summary.
+    :param: data: The data to save.
+    :return: The ID assigned to the saved summary.
 
     """
     id = next_free_id()
@@ -87,8 +73,7 @@ def next_free_id() -> int:
     """
     Find the next available ID for saving a summary.
 
-    Returns:
-        int: The next available ID.
+    :return: The next available ID.
     """
     id_set = set(saved_summary_ids())
     smallest_id = 1
@@ -106,8 +91,7 @@ def saved_summary_ids() -> List[int]:
     """
     Retrieve a list of IDs of saved summaries.
 
-    Returns:
-        List[int]: List of saved summary IDs.
+    :return: List of saved summary IDs.
     """
     summary_numbers = []
     pattern = re.compile(Paths.SUMMARY_PATTERN)
@@ -124,8 +108,7 @@ def remove_random_summary() -> int:
     """
     Remove a randomly selected summary file and return its ID.
 
-    Returns:
-        int: The ID of the removed summary.
+    :return: The ID of the removed summary.
     """
     id = random.randint(1, 99)
     summary_name = summary_name_from_id(id)

@@ -6,14 +6,9 @@ def find_summary_id(content: str) -> int:
     """
     Find the first valid summary ID in the given content.
 
-    Args:
-        content (str): The text to search for a summary ID.
-
-    Returns:
-        int: The found summary ID.
-
-    Raises:
-        ValueError: If no valid summary ID is found.
+    :param content: The text to search for a summary ID.
+    :return int: The found summary ID.
+    :raises ValueError: If no valid summary ID is found.
     """
     pattern = re.compile(r'\b\d+\b')  # Matches sequences of digits
     matches = pattern.findall(content)  # Find all matches in content
@@ -29,14 +24,9 @@ def find_date(content: str) -> datetime:
     """
     Find the first valid date in DD-MM-YYYY format in the given content.
 
-    Args:
-        content (str): The text to search for a date.
-
-    Returns:
-        datetime: The found date.
-
-    Raises:
-        ValueError: If no valid date is found.
+    :param content: The text to search for a date.
+    :return datetime: The found date.
+    :raises ValueError: If no valid date is found.
     """
     pattern = re.compile(r'\b\d{2}.\d{2}.\d{4}\b')  # Matches dates in DD-MM-YYYY format
     matches = pattern.findall(content)  # Find all matches in content
@@ -54,14 +44,9 @@ def find_number(content: str) -> int:
     """
     Find the first valid integer number in the given content.
 
-    Args:
-        content (str): The text to search for a number.
-
-    Returns:
-        int: The found number.
-
-    Raises:
-        ValueError: If no valid number is found.
+    :param content: The text to search for a number.
+    :return: The found number.
+    :raises ValueError: If no valid number is found.
     """
     pattern = re.compile(r'\b\d+(?=\b|\D)')  # Matches sequences of digits
     matches = pattern.findall(content)  # Find all matches in content

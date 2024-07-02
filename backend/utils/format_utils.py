@@ -1,17 +1,15 @@
 from datetime import datetime, timedelta
+from typing import Any
 
 
 def is_valid_startdate(start_datetime: datetime) -> bool:
     """
-    Check if the startdate is valid.
+    Check if the start date is valid.
 
-    A startdate is considered valid if it lies at least one day in the past.
+    A start date is considered valid if it lies at least one day in the past.
 
-    Args:
-        start_datetime (datetime): The start date to validate.
-
-    Returns:
-        bool: True if the startdate is valid, False otherwise.
+    :param start_datetime: The start date to validate.
+    :return: True if the start date is valid, False otherwise.
     """
     now = datetime.now().date()
     threshold_date = now - timedelta(days=1)
@@ -43,3 +41,37 @@ def is_strictly_positive_integer(integer: int) -> bool:
     """
     return integer > 0
 
+
+def round_to(value: Any, decimals=1):
+    """
+    Rounds a numerical value to one decimal place.
+
+    :param value: The value to round.
+    :param decimals: The number of decimal places to round to.
+    :return: Rounded value.
+    """
+    return round(value, decimals)
+
+
+def insert_spaces(term: str, number_of_chars=30) -> str:
+    """
+    Inserts spaces to align terms in the summary output.
+
+    :param term: Term to align.
+    :param number_of_chars: Number of characters in total.
+    :return:str: Term with added spaces for alignment.
+    """
+    remaining_chars = number_of_chars - len(term)
+    added_spaces = remaining_chars * ' '
+    return term + added_spaces
+
+
+def separator_of_length(length: int, separator='~') -> str:
+    """
+    Generates a separator line of specified length.
+
+    :param length: Length of the separator.
+    :param separator: Separator to use.
+    :return: Separator line.
+    """
+    return length * separator
