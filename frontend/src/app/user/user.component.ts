@@ -5,6 +5,23 @@ import {interval, Subscription, switchMap} from 'rxjs';
 import {NgForOf, NgIf} from "@angular/common";
 import {ChatStorageService} from "../chat-storage.service";
 
+/*
+ * Author: Korbinian Zormeier
+ * Date: July 2, 2024
+ *
+ * Project: Internettechnologien Projektarbeit - JAWA Leasing Bot
+ *
+ * Description: This file is part of the Internettechnologien project. It
+ * contains the implementation of the user component which shows all logged-in users.
+ *
+ * Legal Notice:
+ * This source code is subject to the terms and conditions defined in the file
+ * 'LICENSE.txt', which is part of this source code package. Unauthorized copying
+ * of this file, via any medium, is strictly prohibited.
+ *
+ * (c) 2024 Technische Hochschule Deggendorf. All rights reserved.
+ */
+
 @Component({
   selector: 'app-user',
   standalone: true,
