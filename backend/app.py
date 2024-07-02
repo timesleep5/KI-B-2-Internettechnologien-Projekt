@@ -152,9 +152,7 @@ app = FastAPI(
     docs_url="/documentation",
 )
 
-origins = [
-    "http://localhost:4200"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -231,4 +229,4 @@ async def get_logged_in_users():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
