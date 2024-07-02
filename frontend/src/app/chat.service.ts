@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Message} from "./models/message";
 import {NotificationService} from "./notification.service";
 import {ConfigService} from "./config.service";
+import {Router} from "@angular/router";
 
 /*
  * Author: Korbinian Zormeier
@@ -35,6 +36,7 @@ export class ChatService {
 
   constructor(
     private http: HttpClient,
+    private router: Router,
     private configService: ConfigService,
     private notificationService: NotificationService,
   ) {
@@ -69,6 +71,7 @@ export class ChatService {
     return (error: any): Observable<T> => {
       console.error(error);
       this.notificationService.showError(`${operation} failed`, 'ChatService Error')
+      this.router.navigateByUrl('/chat-not-found');
       return of(result as T);
     }
   }
