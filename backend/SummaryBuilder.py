@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Dict, Any, Tuple
 
-from backend.utils.date_utils import format_date, calculate_end_date, calculate_runtime_days
-from backend.utils.format_utils import round_to, insert_spaces, separator_of_length
+from utils.date_utils import format_date, calculate_end_date, calculate_runtime_days
+from utils.format_utils import round_to, insert_spaces, separator_of_length
 from datastructures.ChatModels import LeasingContract
 
 
